@@ -48,8 +48,13 @@
         <button type="submit">Criar conta</button>
       </form>
     </div>
+     <footer class="footer">
+      <p>Desenvolvido pelo Grupo Lima&copy; </p>
+  </footer>
 </div>
+
 </template>
+
 
 <script>
 export default {
@@ -109,6 +114,7 @@ body {
   max-width: 400px;
   margin: 20px auto;
   margin-top: 70px;
+  margin-bottom: 70px;
   padding: 20px;
   background-color: #f9f9f9;
   border-radius: 8px;
@@ -116,7 +122,7 @@ body {
 }
 
 .select-gender {
-  width: 315px;
+  width: 316px;
   height: 36px;
   padding: 8px;
   border-radius: 6px;
@@ -143,6 +149,16 @@ body {
   height: 20px;
   margin-right: 5px;
   margin-left: 5px;
+}
+
+.footer {
+  background-color: #D9D9D9; 
+  color: #404040;
+  text-align: center;
+  padding: 10px 0; 
+  font-size: 14px;
+  position: relative;
+  width: 100%;
 }
 
 label {
