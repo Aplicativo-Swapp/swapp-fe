@@ -6,9 +6,9 @@
       </nav>
     </header>
 
-<div class="form-container">
-  <div class="profile-image-container">
-    <img src="@/assets/login.png" alt="Login" class="login" />
+    <div class="form-container">
+      <div class="profile-image-container">
+        <img src="@/assets/login.png" alt="Login" class="login" />
       </div>
       <h2>Crie sua conta</h2>
       <form @submit.prevent="submitForm">
@@ -48,15 +48,15 @@
         <button type="submit">Criar conta</button>
       </form>
     </div>
-     <footer class="footer">
+    <footer class="footer">
       <p>Desenvolvido pelo Grupo Lima&copy; </p>
-  </footer>
-</div>
-
+    </footer>
+  </div>
 </template>
 
-
 <script>
+import axios from "axios";
+
 export default {
   name: "CadastroUsuario",
   data() {
@@ -77,9 +77,15 @@ export default {
     };
   },
   methods: {
-    submitForm() {
-      console.log("Dados do formulário:", this.formData);
-      alert(`Cadastro realizado com sucesso!`);
+    async submitForm() {
+      try {
+        const response = await axios.post("url_do_MS_Django", this.formData);
+        console.log("Resposta da API:", response.data);
+        alert("Cadastro realizado com sucesso!");
+      } catch (error) {
+        console.error("Erro ao enviar dados:", error);
+        alert("Erro ao cadastrar. Tente novamente.");
+      }
     }
   }
 };
