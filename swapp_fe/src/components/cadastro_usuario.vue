@@ -17,6 +17,9 @@
           <input type="text" v-model="formData.surname" placeholder="Sobrenome" required />
         </div>
         <div class="form-group">
+          <input type="email" v-model="formData.email" placeholder="Email" required />
+        </div>
+        <div class="form-group">
           <input type="password" v-model="formData.password" placeholder="Senha" required />
         </div>
         <div class="form-group">
@@ -55,8 +58,9 @@
 
 </template>
 
-
 <script>
+import axios from 'axios';
+
 export default {
   name: "CadastroUsuario",
   data() {
@@ -77,9 +81,32 @@ export default {
     };
   },
   methods: {
-    submitForm() {
-      console.log("Dados do formulário:", this.formData);
-      alert(`Cadastro realizado com sucesso!`);
+    async submitForm() {
+      if (this.formData.password !== this.formData.confirmPassword) {
+        alert("As senhas não coincidem");
+        return;
+      }
+
+      try {
+        const response = await axios.post('http://0.0.0.0:8000/api/users/register/', {
+          first_name: this.formData.name,
+          last_name: this.formData.surname,
+          email: this.formData.email,
+          password: this.formData.password,
+          cpf: this.formData.cpf,
+          gender: this.formData.gender,
+          contact: this.formData.contact,
+          address: this.formData.address,
+          state: this.formData.state,
+          city: this.formData.city,
+        });
+        alert("Cadastro realizado com sucesso!");
+        console.log("Resposta do servidor:", response.data);
+        // Redirecione o usuário ou limpe o formulário após o sucesso
+      } catch (error) {
+        console.error("Erro ao registrar:", error.response.data);
+        alert("Erro ao realizar cadastro. Verifique os dados e tente novamente.");
+      }
     }
   }
 };
