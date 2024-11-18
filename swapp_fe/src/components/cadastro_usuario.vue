@@ -6,9 +6,9 @@
       </nav>
     </header>
 
-<div class="form-container">
-  <div class="profile-image-container">
-    <img src="@/assets/login.png" alt="Login" class="login" />
+    <div class="form-container">
+      <div class="profile-image-container">
+        <img src="@/assets/login.png" alt="Login" class="login" />
       </div>
       <h2>Crie sua conta</h2>
       <form @submit.prevent="submitForm">
@@ -51,15 +51,14 @@
         <button type="submit">Criar conta</button>
       </form>
     </div>
-     <footer class="footer">
+    <footer class="footer">
       <p>Desenvolvido pelo Grupo Lima&copy; </p>
-  </footer>
-</div>
-
+    </footer>
+  </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
   name: "CadastroUsuario",
@@ -82,30 +81,13 @@ export default {
   },
   methods: {
     async submitForm() {
-      if (this.formData.password !== this.formData.confirmPassword) {
-        alert("As senhas não coincidem");
-        return;
-      }
-
       try {
-        const response = await axios.post('http://0.0.0.0:8000/api/users/register/', {
-          first_name: this.formData.name,
-          last_name: this.formData.surname,
-          email: this.formData.email,
-          password: this.formData.password,
-          cpf: this.formData.cpf,
-          gender: this.formData.gender,
-          contact: this.formData.contact,
-          address: this.formData.address,
-          state: this.formData.state,
-          city: this.formData.city,
-        });
+        const response = await axios.post("url_do_MS_Django", this.formData);
+        console.log("Resposta da API:", response.data);
         alert("Cadastro realizado com sucesso!");
-        console.log("Resposta do servidor:", response.data);
-        // Redirecione o usuário ou limpe o formulário após o sucesso
       } catch (error) {
-        console.error("Erro ao registrar:", error.response.data);
-        alert("Erro ao realizar cadastro. Verifique os dados e tente novamente.");
+        console.error("Erro ao enviar dados:", error);
+        alert("Erro ao cadastrar. Tente novamente.");
       }
     }
   }
