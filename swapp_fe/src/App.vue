@@ -1,16 +1,18 @@
 <template>
   <div id="app">
-    <CadastroUsuario />
+    <TheNavigation/>
+    <router-view></router-view>  
   </div>
 </template>
 
 <script>
-import CadastroUsuario from "./components/cadastro_usuario.vue";
+
+import TheNavigation from './components/TheNavigation.vue';
 
 export default {
   name: "App",
   components: {
-    CadastroUsuario,
+    TheNavigation,
   },
 };
 </script>
