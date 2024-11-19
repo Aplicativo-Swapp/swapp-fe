@@ -45,13 +45,21 @@ export default {
     },
     methods: {
       async submitForm() {
+        if (!this.formData.email || !this.formData.password) {
+          alert("Preencha todos os campos!");
+          return;
+        }
+
         try {
-          const response = await axios.post("http://localhost:8000/api/login/", this.formData);
+          const response = await axios.post("http://localhost:8000/api/users/login/", {
+            email: this.formData.email,
+            password: this.formData.password,
+          });
           console.log("Resposta da API:", response.data);
           alert("Login realizado com sucesso!");
         } catch (error) {
-          console.error("Erro ao enviar dados:", error);
-          alert("Erro ao realizar login. Tente novamente.");
+          console.error("Erro ao enviar dados:", error.response.data);
+          alert("Erro ao realizar login. Verifique os dados e Tente novamente.");
         }
       },
     },
