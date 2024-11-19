@@ -84,13 +84,30 @@ export default {
   },
   methods: {
     async submitForm() {
+      if (this.formData.password !== this.formData.confirmPassword) {
+        alert("As senhas não coincidem");
+        return;
+      }
+
       try {
-        const response = await axios.post("url_do_MS_Django", this.formData);
-        console.log("Resposta da API:", response.data);
+        const response = await axios.post('http://0.0.0.0:8000/api/users/register/', {
+          first_name: this.formData.name,
+          last_name: this.formData.surname,
+          email: this.formData.email,
+          password: this.formData.password,
+          cpf: this.formData.cpf,
+          gender: this.formData.gender,
+          contact: this.formData.contact,
+          address: this.formData.address,
+          state: this.formData.state,
+          city: this.formData.city,
+        });
         alert("Cadastro realizado com sucesso!");
+        console.log("Resposta da API:", response.data);
+        // Redirecione o usuário ou limpe o formulário após o sucesso
       } catch (error) {
-        console.error("Erro ao enviar dados:", error);
-        alert("Erro ao cadastrar. Tente novamente.");
+        console.error("Erro ao registrar:", error.response.data);
+        alert("Erro ao realizar cadastro. Verifique os dados e tente novamente.");
       }
     },
   },
