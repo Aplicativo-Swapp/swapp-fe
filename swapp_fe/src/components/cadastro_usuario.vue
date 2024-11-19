@@ -49,10 +49,13 @@
           <input type="text" v-model="formData.address" placeholder="Endereço" required />
         </div>
         <button type="submit">Criar conta</button>
+        <p class="login-link">
+          Já tem cadastro? <a href="/login">Login</a>
+        </p>
       </form>
     </div>
     <footer class="footer">
-      <p>Desenvolvido pelo Grupo Lima&copy; </p>
+      <p>Desenvolvido pelo Grupo Lima&copy;</p>
     </footer>
   </div>
 </template>
@@ -75,8 +78,8 @@ export default {
         contact: "",
         state: "",
         city: "",
-        address: ""
-      }
+        address: "",
+      },
     };
   },
   methods: {
@@ -89,8 +92,8 @@ export default {
         console.error("Erro ao enviar dados:", error);
         alert("Erro ao cadastrar. Tente novamente.");
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -104,9 +107,9 @@ export default {
 }
 
 body {
-  background-color: #ececec; 
-  margin: 0; 
-  font-family: Arial, sans-serif; 
+  background-color: #ececec;
+  margin: 0;
+  font-family: Arial, sans-serif;
 }
 
 .logo {
@@ -114,7 +117,7 @@ body {
   height: auto;
 }
 
-.login{
+.login {
   width: 50px;
   height: auto;
 }
@@ -137,10 +140,10 @@ body {
   border-radius: 6px;
   border: none;
   background-color: #d9d9d9;
-  color: #666; 
+  color: #666;
   font-size: 14px;
   appearance: none;
-  }
+}
 
 .profile-image-container {
   position: absolute;
@@ -154,17 +157,17 @@ body {
 }
 
 .name-surname-group input[type="text"] {
-  width:137px; 
+  width: 137px;
   height: 20px;
   margin-right: 5px;
   margin-left: 5px;
 }
 
 .footer {
-  background-color: #D9D9D9; 
+  background-color: #D9D9D9;
   color: #404040;
   text-align: center;
-  padding: 10px 0; 
+  padding: 10px 0;
   font-size: 14px;
   position: relative;
   width: 100%;
@@ -175,7 +178,6 @@ label {
   margin-bottom: 5px;
   font-weight: light;
 }
-
 
 input[type="text"],
 input[type="password"],
@@ -190,7 +192,7 @@ input[type="email"] {
 
 button {
   width: 120px;
-  padding:10px;
+  padding: 10px;
   background-color: #89FFDB;
   color: black;
   border: none;
@@ -200,5 +202,22 @@ button {
 
 button:hover {
   background-color: #89FFDB;
+}
+
+/* Estilo do link "Já tem cadastro? Login" */
+.login-link {
+  font-size: 14px;
+  text-align: center;
+  margin-top: 15px; /* Espaço acima do link */
+}
+
+.login-link a {
+  color: #89FFDB;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.login-link a:hover {
+  color: #6cffb5;
 }
 </style>
