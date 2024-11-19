@@ -110,6 +110,13 @@ body {
   background-color: #ececec;
   margin: 0;
   font-family: Arial, sans-serif;
+  min-height: 100vh; 
+  display: flex;
+  flex-direction: column;
+}
+
+#app {
+  flex: 1; 
 }
 
 .logo {
@@ -147,7 +154,7 @@ body {
 
 .profile-image-container {
   position: absolute;
-  top: 145px;
+  top: 250px;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -169,8 +176,6 @@ body {
   text-align: center;
   padding: 10px 0;
   font-size: 14px;
-  position: relative;
-  width: 100%;
 }
 
 label {

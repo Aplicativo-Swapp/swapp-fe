@@ -27,8 +27,6 @@
     </header>
 
     <main>
-      <h1>Bem-vindo à Home</h1>
-      <p>Este é o conteúdo principal da página Home.</p>
     </main>
   </div>
 </template>
@@ -100,11 +98,10 @@ export default {
   background-color: #76e3c3;
 }
 
-/* Lista de Utilidades */
 .utility-list {
   list-style: none;
   display: flex;
-  gap: 15px;
+  gap: 5px;
   margin: 0;
   padding: 0;
 }
