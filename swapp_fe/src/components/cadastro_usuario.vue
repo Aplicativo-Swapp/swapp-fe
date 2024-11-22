@@ -50,8 +50,9 @@
         </div>
         <button type="submit">Criar conta</button>
         <p class="login-link">
-          Já tem cadastro? <a href="/login">Login</a>
+          Já tem cadastro? <router-link to="/login">Login</router-link>
         </p>
+
       </form>
     </div>
     <footer class="footer">
