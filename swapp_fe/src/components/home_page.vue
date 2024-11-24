@@ -11,29 +11,31 @@
           />
           <button @click="search">buscar</button>
         </div>
-        <div class="dropdown">
-          <button class="dropbtn">Categorias <span class="arrow">&#9660;</span></button>
-          <div class="dropdown-content">
-            <a href="#">Assistência Técnica</a>
-            <a href="#">Aulas</a>
-            <a href="#">Consultoria</a>
-            <a href="#">Design e Tecnologia</a>
-            <a href="#">Eventos</a>
-            <a href="#">Moda e Beleza</a>
-            <a href="#">Reformas e Reparos</a>
-            <a href="#">Saúde</a>
-            <a href="#">Serviços Domésticos</a>
+        <div class="itens">
+          <div class="dropdown">
+            <button class="dropbtn">Categorias <span class="arrow">&#9660;</span></button>
+            <div class="dropdown-content">
+              <a href="#">Assistência Técnica</a>
+              <a href="#">Aulas</a>
+              <a href="#">Consultoria</a>
+              <a href="#">Design e Tecnologia</a>
+              <a href="#">Eventos</a>
+              <a href="#">Moda e Beleza</a>
+              <a href="#">Reformas e Reparos</a>
+              <a href="#">Saúde</a>
+              <a href="#">Serviços Domésticos</a>
+            </div>
           </div>
+              <ul class="utility-list">
+                <li class="nav-item">
+                  <a href="/">Contato</a>
+                </li>
+                <img src="@/assets/entrar_homepage.jpeg" alt="Entrar" class="entrar" />
+                <li class="nav-item">
+                  <router-link to="/login">Entrar</router-link>
+                </li>
+              </ul>
         </div>
-        <ul class="utility-list">
-          <li class="nav-item">
-            <a href="/">Contato</a>
-          </li>
-          <img src="@/assets/entrar_homepage.jpeg" alt="Entrar" class="entrar" />
-          <li class="nav-item">
-            <router-link to="/login">Entrar</router-link>
-          </li>
-        </ul>
       </div>
     </header>
    </div>
@@ -95,7 +97,7 @@
           </a>
         </div>
       </div>
-      <div class="header-content">
+      <div>
         <img src="@/assets/banner.jpeg" alt="Banner" class="banner" />
         </div>
     </main>
@@ -177,28 +179,29 @@ export default {
   background-color: #ffffff;
 }
 
+
 .header {
-  background-color: #14241f;
+  background-color: #14241f; /* Cor de fundo */
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
+  justify-content: center; /* Centraliza o conteúdo horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+  height: 120px; /* Define altura fixa */
+  width: 100%; /* Ocupa 100% da largura */
 }
 
 .header-content {
-  background-color: #14241f;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 15px;
-  margin-bottom: 15px;
+  align-items: center; /* Alinha os itens verticalmente */
+  justify-content: center; /* Centraliza os itens horizontalmente */
+  width: 100%; /* Garante que ocupe toda a largura */
+  position: relative; /* Necessário para ajustar a logo e dropdown */
 }
 
 .logo {
+  position: absolute; /* Remove do fluxo normal */
+  left: 20px; /* Alinha a logo à esquerda */
   width: 200px;
-  margin-left: 50px;
   height: auto;
-  margin-right: 350px;
 }
 
 .entrar {
@@ -213,11 +216,12 @@ export default {
 
 .search-bar {
   display: flex;
-  justify-content: center; /* Centraliza horizontalmente */
+  justify-content: center;
   align-items: center;
   background-color: #eaeaea;
   border-radius: 8px;
-  width: 350px; /* Tamanho total da barra de pesquisa */
+  width: 350px; 
+  margin: 0 auto; 
 }
 
 .search-bar input {
@@ -246,9 +250,7 @@ export default {
   font-weight: 200;
   list-style: none;
   display: flex;
-  gap: 5px;
-  margin: 0;
-  padding: 0;
+  padding-inline-start: 0;
 }
 
 .utility-list li a {
@@ -265,7 +267,6 @@ export default {
   padding: 8px;
   border-radius: 5px;
   border: none;
-  margin-left: 10px; 
   background-color: #14241F;
   font-size: 14px;
 }
@@ -312,20 +313,23 @@ export default {
   margin-top: 10px;
 }
 
-/* Estilo para o botão do dropdown */
-.dropdown {
-  position: relative;
-  display: inline-block;
-  margin-left: 190px;
+.itens{
+  position: absolute;
+  right: 30px; /* Alinha os itens à direita */
+  display: flex;
+  align-items: center;
+}
+
+.dropdown{
+  display: flex;
 }
 
 .dropbtn {
   font-family: 'Open Sauce One', sans-serif;
-  font-weight: 200;
+  font-weight: 400;
   list-style: none;   
   background-color: #14241F;
   color: white;
-  padding: 10px 20px;
   border: none;
   cursor: pointer;
   display: flex;
