@@ -23,6 +23,9 @@
                 <li class="nav-item">
                     <router-link to="/login" class= "nav-link">Login</router-link>
                 </li>
+                <li class="nav-item">
+                    <router-link to="/inserir-habilidade" class= "nav-link">Inserir Habilidade</router-link>
+                </li>
             </ul>
         </div>
     </nav>
