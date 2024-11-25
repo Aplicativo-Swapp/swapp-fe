@@ -64,9 +64,9 @@
           
           <button type="submit">Anunciar</button>
         </form>
-      </div><!--
+      </div>
       
-      --><div class="illustration">
+      <div class="illustration">
         <nav>
           <div class="text-illustration">
             <h2>É BOM EM ALGO?</h2>
@@ -188,9 +188,9 @@ body {
 }
 
 .form-container {
-  max-width: 400px;
+  width: 400px;
   margin-top: 70px;
-  margin-bottom: 70px;
+  margin-bottom: auto;
   margin-left: -440px;
   margin-right: auto;
   padding: 20px;
