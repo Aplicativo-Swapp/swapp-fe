@@ -1,10 +1,7 @@
 <template>
   <div>
-    <header class="header">
-      <nav>
-        <img src="@/assets/logo2.png" alt="Logo" class="logo" />
-      </nav>
-    </header>
+    
+    <TheHeader />
 
     <div class="form-container">
       <div class="profile-image-container">
@@ -32,9 +29,15 @@
 
 <script>
 import axios from "axios";
+import TheHeader from "@/components/TheHeaderLogo.vue";
+
+
 
 export default {
     name: "LoginPage",
+    components: {
+      TheHeader
+    },
     data() {
       return {
         formData: {
@@ -43,6 +46,7 @@ export default {
         },
       };
     },
+
     methods: {
       async submitForm() {
         if (!this.formData.email || !this.formData.password) {
@@ -67,30 +71,6 @@ export default {
 </script>
 
 <style scoped>
-.header {
-  background-color: #14241F;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-#app {
-  flex: 1; 
-}
-body {
-  background-color: #ececec;
-  margin: 0;
-  font-family: Arial, sans-serif;
-  min-height: 100vh; 
-  display: flex;
-  flex-direction: column;
-}
-
-.logo {
-  width: 200px;
-  height: auto;
-}
 
 .login {
   width: 50px;

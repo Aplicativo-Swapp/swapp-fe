@@ -11,31 +11,29 @@
           />
           <button @click="search">buscar</button>
         </div>
-        <div class="itens">
-          <div class="dropdown">
-            <button class="dropbtn">Categorias <span class="arrow">&#9660;</span></button>
-            <div class="dropdown-content">
-              <a href="#">Assistência Técnica</a>
-              <a href="#">Aulas</a>
-              <a href="#">Consultoria</a>
-              <a href="#">Design e Tecnologia</a>
-              <a href="#">Eventos</a>
-              <a href="#">Moda e Beleza</a>
-              <a href="#">Reformas e Reparos</a>
-              <a href="#">Saúde</a>
-              <a href="#">Serviços Domésticos</a>
-            </div>
+        <div class="dropdown">
+          <button class="dropbtn">Categorias <span class="arrow">&#9660;</span></button>
+          <div class="dropdown-content">
+            <a href="#">Assistência Técnica</a>
+            <a href="#">Aulas</a>
+            <a href="#">Consultoria</a>
+            <a href="#">Design e Tecnologia</a>
+            <a href="#">Eventos</a>
+            <a href="#">Moda e Beleza</a>
+            <a href="#">Reformas e Reparos</a>
+            <a href="#">Saúde</a>
+            <a href="#">Serviços Domésticos</a>
           </div>
-              <ul class="utility-list">
-                <li class="nav-item">
-                  <a href="/">Contato</a>
-                </li>
-                <img src="@/assets/entrar_homepage.jpeg" alt="Entrar" class="entrar" />
-                <li class="nav-item">
-                  <router-link to="/login">Entrar</router-link>
-                </li>
-              </ul>
         </div>
+        <ul class="utility-list">
+          <li class="nav-item">
+            <a href="/">Contato</a>
+          </li>
+          <img src="@/assets/entrar_homepage.jpeg" alt="Entrar" class="entrar" />
+          <li class="nav-item">
+            <router-link to="/login">Entrar</router-link>
+          </li>
+        </ul>
       </div>
     </header>
    </div>
@@ -97,79 +95,11 @@
           </a>
         </div>
       </div>
-      <div>
+      <div class="header-content">
         <img src="@/assets/banner.jpeg" alt="Banner" class="banner" />
         </div>
     </main>
 
-    <!--Serviços mais Procurados-->
-    <section class="services-section">
-      <h2 class="section-title">Serviços mais Procurados</h2>
-      <div class="services-container">
-        <!-- Serviço 1 -->
-        <div class="service-card">
-          <img src="@/assets/corte_de_cabelo.png" alt="Corte de cabelo" class="service-image" />
-          <h3 class="service-title">Corte de cabelo</h3>
-          <p class="service-location">Localização: Xique-Xique - BA</p>
-          <p class="service-rating">
-            ⭐⭐⭐⭐⭐ <span>(5)</span>
-          </p>
-        </div>
-        <!-- Serviço 2 -->
-        <div class="service-card">
-          <img src="@/assets/pintura_de_parede.png" alt="Pintura de parede" class="service-image" />
-          <h3 class="service-title">Pintura de parede</h3>
-          <p class="service-location">Localização: Jacareí - SP</p>
-          <p class="service-rating">
-            ⭐⭐⭐⭐⭐ <span>(5)</span>
-          </p>
-        </div>
-        <!-- Serviço 3 -->
-        <div class="service-card">
-          <img src="@/assets/aulas_de_ingles.png" alt="Aula de Inglês" class="service-image" />
-          <h3 class="service-title">Aula de Inglês</h3>
-          <p class="service-location">Localização: Pindamonhangaba - SP</p>
-          <p class="service-rating">
-            ⭐⭐⭐⭐⭐ <span>(5)</span>
-          </p>
-        </div>
-        <!-- Serviço 4 -->
-        <div class="service-card">
-          <img src="@/assets/design_de_post.png" alt="Design de Post" class="service-image" />
-          <h3 class="service-title">Design de Post</h3>
-          <p class="service-location">Localização: Volta Redonda - RJ</p>
-          <p class="service-rating">
-            ⭐⭐⭐⭐⭐ <span>(5)</span>
-          </p>
-        </div>
-      </div>
-      <a href="/servicos" class="view-more">Ver mais</a>
-    </section>
-
-    
-    <!--Sobre nos-->
-    <section class="about-section">
-      <div class="about-content">
-        <div class="about-text">
-          <h2>Sobre Nós</h2>
-          <p>
-            O Swapp é um aplicativo que conecta pessoas por meio da troca de habilidades.
-            Nosso propósito é criar um ambiente onde todos possam compartilhar seus talentos
-            e aprender algo novo, construindo conexões significativas. Com o slogan
-            <strong>"Troque talentos, crie conexões"</strong>, incentivamos a colaboração
-            e o crescimento mútuo. Aqui, você pode oferecer o que sabe fazer de melhor e
-            encontrar quem precisa do seu talento. Seja para aprender, ensinar ou colaborar,
-            o Swapp transforma habilidades em oportunidades. Descubra o valor de compartilhar
-            e faça parte de uma comunidade onde todos têm algo único para oferecer.
-          </p>
-        </div>
-        <div class="about-image">
-          <img src="@/assets/aperto_de_maos.png" alt="Aperto de Mãos" />
-        </div>
-      </div>
-    </section>
-
-    
     <!--Footer-->
     <footer class="footer">
       <div class="footer-content">
@@ -216,8 +146,6 @@
         <p>Desenvolvido pelo Grupo Lima</p>
       </div>
     </footer>
-
-
 </template>
 
 <script>
@@ -247,29 +175,28 @@ export default {
   background-color: #ffffff;
 }
 
-
 .header {
-  background-color: #14241f; /* Cor de fundo */
+  background-color: #14241f;
   display: flex;
-  justify-content: center; /* Centraliza o conteúdo horizontalmente */
-  align-items: center; /* Centraliza verticalmente */
-  height: 120px; /* Define altura fixa */
-  width: 100%; /* Ocupa 100% da largura */
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
 }
 
 .header-content {
+  background-color: #14241f;
   display: flex;
-  align-items: center; /* Alinha os itens verticalmente */
-  justify-content: center; /* Centraliza os itens horizontalmente */
-  width: 100%; /* Garante que ocupe toda a largura */
-  position: relative; /* Necessário para ajustar a logo e dropdown */
+  align-items: center;
+  justify-content: center;
+  margin-top: 15px;
+  margin-bottom: 15px;
 }
 
 .logo {
-  position: absolute; /* Remove do fluxo normal */
-  left: 20px; /* Alinha a logo à esquerda */
   width: 200px;
+  margin-left: 50px;
   height: auto;
+  margin-right: 350px;
 }
 
 .entrar {
@@ -284,12 +211,11 @@ export default {
 
 .search-bar {
   display: flex;
-  justify-content: center;
+  justify-content: center; /* Centraliza horizontalmente */
   align-items: center;
   background-color: #eaeaea;
   border-radius: 8px;
-  width: 350px; 
-  margin: 0 auto; 
+  width: 350px; /* Tamanho total da barra de pesquisa */
 }
 
 .search-bar input {
@@ -318,7 +244,9 @@ export default {
   font-weight: 200;
   list-style: none;
   display: flex;
-  padding-inline-start: 0;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
 }
 
 .utility-list li a {
@@ -335,6 +263,7 @@ export default {
   padding: 8px;
   border-radius: 5px;
   border: none;
+  margin-left: 10px; 
   background-color: #14241F;
   font-size: 14px;
 }
@@ -381,23 +310,20 @@ export default {
   margin-top: 10px;
 }
 
-.itens{
-  position: absolute;
-  right: 30px; /* Alinha os itens à direita */
-  display: flex;
-  align-items: center;
-}
-
-.dropdown{
-  display: flex;
+/* Estilo para o botão do dropdown */
+.dropdown {
+  position: relative;
+  display: inline-block;
+  margin-left: 190px;
 }
 
 .dropbtn {
   font-family: 'Open Sauce One', sans-serif;
-  font-weight: 400;
+  font-weight: 200;
   list-style: none;   
   background-color: #14241F;
   color: white;
+  padding: 10px 20px;
   border: none;
   cursor: pointer;
   display: flex;
@@ -432,158 +358,6 @@ export default {
 .dropdown-content a:hover {
   background-color: #ddd; /* Cor de fundo quando passar o mouse */
 }
-
-/* Serviços mais Procurados*/
-
-.services-section {
-  background-color: #f0f0f0;
-  padding: 40px 20px; 
-  border-radius: 8px; 
-  margin-bottom: 0px; 
-}
-
-/* Título da seção */
-.section-title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  text-align: left; 
-  padding-left: 10px; 
-}
-
-.section-title::after {
-  content: ""; /* Cria o pseudo-elemento */
-  display: block; /* Faz a linha aparecer abaixo do título */
-  width: 300px; /* Largura da linha (ajuste conforme necessário) */
-  height: 4px; /* Espessura da linha */
-  background-color: #89ffdb; /* Cor verde */
-  margin-top: 5px; /* Espaçamento entre o título e a linha */
-}
-
-/* Container dos serviços */
-.services-container {
-  display: flex;
-  margin: 0;
-  padding: 0;
-  flex-wrap: wrap; 
-  gap: 5px; 
-  justify-content: space-between; 
-}
-
-/* Card de serviço */
-.service-card {
-  background-color: #fff; 
-  border: 1px solid #ddd; 
-  border-radius: 8px; 
-  padding: 10px; 
-  width: calc(20% - 40px); 
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
-  text-align: center; 
-  transition: transform 0.3s;
-}
-
-/* Efeito ao passar o mouse */
-.service-card:hover {
-  transform: scale(1.05); /* Leve aumento */
-}
-
-/* Imagem do serviço */
-.service-image {
-  width: 70%; /* Ocupa toda a largura do card */
-  border-radius: 8px; /* Bordas arredondadas */
-  margin-bottom: 3px; /* Espaço abaixo da imagem */
-}
-
-/* Título do serviço */
-.service-title {
-  font-size: 18px; /* Tamanho do texto */
-  font-weight: bold; /* Negrito */
-  margin-bottom: 10px; /* Espaço abaixo do título */
-}
-
-/* Localização */
-.service-location {
-  font-size: 14px; /* Texto menor */
-  color: #666; /* Cinza suave */
-  margin-bottom: 10px; /* Espaço abaixo da localização */
-}
-
-/* Avaliação */
-.service-rating {
-  font-size: 14px; /* Texto menor */
-  color: #00d1a0; /* Verde */
-}
-
-/* Link "Ver mais" */
-.view-more {
-  display: block; /* Mostra como linha separada */
-  text-align: right; /* Alinha à direita */
-  margin-top: 20px; /* Espaço acima do link */
-  font-size: 14px; /* Texto menor */
-  color: #00d1a0; /* Cor verde */
-  text-decoration: none; /* Remove o sublinhado */
-}
-
-.view-more:hover {
-  text-decoration: underline; /* Adiciona sublinhado ao passar o mouse */
-}
-
-
-/* Sobre Nos */
-.about-section {
-  background-color: #D9D9D9; 
-  padding: 40px 20px; 
-  display: flex;
-  justify-content: center;
-}
-
-.about-content {
-  display: flex;
-  max-width: 1200px; /* Largura máxima da seção */
-  width: 100%;
-  gap: 20px; /* Espaçamento entre texto e imagem */
-}
-
-.about-text {
-  flex: 1;
-  text-align: left;
-}
-
-.about-text h2 {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  position: relative; /* Necessário para o pseudo-elemento */
-}
-
-.about-text h2::after {
-  content: ""; 
-  display: block; 
-  width: 125px; 
-  height: 6px; 
-  background-color: #89ffdb; 
-  margin-top: 5px; 
-}
-
-.about-text p {
-  font-size: 16px;
-  line-height: 1.6; 
-  color: #333; 
-}
-
-.about-image {
-  flex: 1; 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.about-image img {
-  width: 100%; 
-  max-width: 300px;
-  height: auto; 
-}
-
 
 /* Footer */
 .footer {
