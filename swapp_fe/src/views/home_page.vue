@@ -11,32 +11,33 @@
           />
           <button @click="search">buscar</button>
         </div>
-        <div class="dropdown">
-          <button class="dropbtn">Categorias <span class="arrow">&#9660;</span></button>
-          <div class="dropdown-content">
-            <a href="#">Assistência Técnica</a>
-            <a href="#">Aulas</a>
-            <a href="#">Consultoria</a>
-            <a href="#">Design e Tecnologia</a>
-            <a href="#">Eventos</a>
-            <a href="#">Moda e Beleza</a>
-            <a href="#">Reformas e Reparos</a>
-            <a href="#">Saúde</a>
-            <a href="#">Serviços Domésticos</a>
+        <div class="itens">
+          <div class="dropdown">
+            <button class="dropbtn">Categorias <span class="arrow">&#9660;</span></button>
+            <div class="dropdown-content">
+              <a href="#">Assistência Técnica</a>
+              <a href="#">Aulas</a>
+              <a href="#">Consultoria</a>
+              <a href="#">Design e Tecnologia</a>
+              <a href="#">Eventos</a>
+              <a href="#">Moda e Beleza</a>
+              <a href="#">Reformas e Reparos</a>
+              <a href="#">Saúde</a>
+              <a href="#">Serviços Domésticos</a>
+            </div>
           </div>
+          <ul class="utility-list">
+            <li class="nav-item">
+              <a href="/">Contato</a>
+            </li>
+            <img src="@/assets/entrar_homepage.jpeg" alt="Entrar" class="entrar" />
+            <li class="nav-item">
+              <router-link to="/login">Entrar</router-link>
+            </li>
+          </ul>
         </div>
-        <ul class="utility-list">
-          <li class="nav-item">
-            <a href="/">Contato</a>
-          </li>
-          <img src="@/assets/entrar_homepage.jpeg" alt="Entrar" class="entrar" />
-          <li class="nav-item">
-            <router-link to="/login">Entrar</router-link>
-          </li>
-        </ul>
       </div>
     </header>
-   </div>
 
     <main class="main">
       <div class="categories">
@@ -95,66 +96,89 @@
           </a>
         </div>
       </div>
-      <div class="header-content">
+      <div>
         <img src="@/assets/banner.jpeg" alt="Banner" class="banner" />
-        </div>
+      </div>
     </main>
 
-    <!--Footer-->
-    <footer class="footer">
-      <div class="footer-content">
-        <div class="footer-logo">
-          <div class="footer-logo">
-            <img src="@/assets/logo2.png" alt="Logo Swapp" class="logo-image" />
-          </div>
+    <section class="services-section">
+      <h2 class="section-title">Serviços mais Procurados</h2>
+      <div class="services-container">
+        <div class="service-card">
+          <img src="@/assets/corte_de_cabelo.png" alt="Corte de cabelo" class="service-image" />
+          <h3 class="service-title">Corte de cabelo</h3>
+          <p class="service-location">Localização: Xique-Xique - BA</p>
+          <p class="service-rating">
+            ⭐⭐⭐⭐⭐ <span>(5)</span>
+          </p>
         </div>
-        <div class="footer-links">
-          <div class="footer-section">
-            <h3>Início</h3>
-            <ul>
-              <li><a href="#">Categorias</a></li>
-              <li><a href="#">Serviços</a></li>
-              <li><a href="#">Entrar</a></li>
-            </ul>
-          </div>
-          <div class="footer-section">
-            <h3>Sobre nós</h3>
-            <ul>
-              <li><a href="#">Informações da empresa</a></li>
-            </ul>
-          </div>
-          <div class="footer-section">
-            <h3>Suporte</h3>
-            <ul>
-              <li><a href="#">Entre em contato</a></li>
-              <li><a href="#">Perguntas frequentes</a></li>
-            </ul>
-          </div>
+        <div class="service-card">
+          <img src="@/assets/pintura_de_parede.png" alt="Pintura de parede" class="service-image" />
+          <h3 class="service-title">Pintura de parede</h3>
+          <p class="service-location">Localização: Jacareí - SP</p>
+          <p class="service-rating">
+            ⭐⭐⭐⭐⭐ <span>(5)</span>
+          </p>
         </div>
-        <div class="footer-contact">
-          <a href="/contato">
-            <div class="footer-social">
-              <img src="@/assets/midias_sociais_logo.png" alt="Midias Sociais" class="footer-social-logo" />
-            </div>
-          </a>
-          <a href="/contato">
-            <button class="contact-button">Contato</button>
-          </a>
+        <div class="service-card">
+          <img src="@/assets/aulas_de_ingles.png" alt="Aula de Inglês" class="service-image" />
+          <h3 class="service-title">Aula de Inglês</h3>
+          <p class="service-location">Localização: Pindamonhangaba - SP</p>
+          <p class="service-rating">
+            ⭐⭐⭐⭐⭐ <span>(5)</span>
+          </p>
+        </div>
+        <div class="service-card">
+          <img src="@/assets/design_de_post.png" alt="Design de Post" class="service-image" />
+          <h3 class="service-title">Design de Post</h3>
+          <p class="service-location">Localização: Volta Redonda - RJ</p>
+          <p class="service-rating">
+            ⭐⭐⭐⭐⭐ <span>(5)</span>
+          </p>
         </div>
       </div>
-      <div class="footer-bottom">
-        <p>Desenvolvido pelo Grupo Lima</p>
+      <a href="/servicos" class="view-more">Ver mais</a>
+    </section>
+
+    <section class="about-section">
+      <div class="about-content">
+        <div class="about-text">
+          <h2>Sobre Nós</h2>
+          <p>
+            O Swapp é um aplicativo que conecta pessoas por meio da troca de habilidades.
+            Nosso propósito é criar um ambiente onde todos possam compartilhar seus talentos
+            e aprender algo novo, construindo conexões significativas. Com o slogan
+            <strong>"Troque talentos, crie conexões"</strong>, incentivamos a colaboração
+            e o crescimento mútuo. Aqui, você pode oferecer o que sabe fazer de melhor e
+            encontrar quem precisa do seu talento. Seja para aprender, ensinar ou colaborar,
+            o Swapp transforma habilidades em oportunidades. Descubra o valor de compartilhar
+            e faça parte de uma comunidade onde todos têm algo único para oferecer.
+          </p>
+        </div>
+        <div class="about-image">
+          <img src="@/assets/aperto_de_maos.png" alt="Aperto de Mãos" />
+        </div>
       </div>
-    </footer>
+    </section>
+
+    <!-- Componente do Footer -->
+    <TheFooter />
+  </div>
 </template>
 
+
 <script>
+import TheFooter from "@/components/TheFooter.vue";
+
 export default {
   name: "HomePage",
+  components: {
+    TheFooter // Registra o componente TheFooter
+  },
   data() {
     return {
-      searchQuery: "", // armazena a pesquisa
-      selectedCategory: "", // armazena a categoria selecionada
+      searchQuery: "", // Armazena o texto de busca
+      selectedCategory: "", // Armazena a categoria selecionada
     };
   },
   methods: {
@@ -169,34 +193,36 @@ export default {
 </script>
 
 
+
 <style scoped>
 
 .main{
   background-color: #ffffff;
 }
 
+
 .header {
-  background-color: #14241f;
+  background-color: #14241f; /* Cor de fundo */
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
+  justify-content: center; /* Centraliza o conteúdo horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+  height: 120px; /* Define altura fixa */
+  width: 100%; /* Ocupa 100% da largura */
 }
 
 .header-content {
-  background-color: #14241f;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 15px;
-  margin-bottom: 15px;
+  align-items: center; /* Alinha os itens verticalmente */
+  justify-content: center; /* Centraliza os itens horizontalmente */
+  width: 100%; /* Garante que ocupe toda a largura */
+  position: relative; /* Necessário para ajustar a logo e dropdown */
 }
 
 .logo {
+  position: absolute; /* Remove do fluxo normal */
+  left: 20px; /* Alinha a logo à esquerda */
   width: 200px;
-  margin-left: 50px;
   height: auto;
-  margin-right: 350px;
 }
 
 .entrar {
@@ -211,11 +237,12 @@ export default {
 
 .search-bar {
   display: flex;
-  justify-content: center; /* Centraliza horizontalmente */
+  justify-content: center;
   align-items: center;
   background-color: #eaeaea;
   border-radius: 8px;
-  width: 350px; /* Tamanho total da barra de pesquisa */
+  width: 350px; 
+  margin: 0 auto; 
 }
 
 .search-bar input {
@@ -244,9 +271,7 @@ export default {
   font-weight: 200;
   list-style: none;
   display: flex;
-  gap: 5px;
-  margin: 0;
-  padding: 0;
+  padding-inline-start: 0;
 }
 
 .utility-list li a {
@@ -263,7 +288,6 @@ export default {
   padding: 8px;
   border-radius: 5px;
   border: none;
-  margin-left: 10px; 
   background-color: #14241F;
   font-size: 14px;
 }
@@ -310,20 +334,23 @@ export default {
   margin-top: 10px;
 }
 
-/* Estilo para o botão do dropdown */
-.dropdown {
-  position: relative;
-  display: inline-block;
-  margin-left: 190px;
+.itens{
+  position: absolute;
+  right: 30px; /* Alinha os itens à direita */
+  display: flex;
+  align-items: center;
+}
+
+.dropdown{
+  display: flex;
 }
 
 .dropbtn {
   font-family: 'Open Sauce One', sans-serif;
-  font-weight: 200;
+  font-weight: 400;
   list-style: none;   
   background-color: #14241F;
   color: white;
-  padding: 10px 20px;
   border: none;
   cursor: pointer;
   display: flex;
@@ -359,116 +386,156 @@ export default {
   background-color: #ddd; /* Cor de fundo quando passar o mouse */
 }
 
-/* Footer */
-.footer {
-  background-color: #14241f; 
-  color: #fff; 
-  padding: 20px 0; 
+/* Serviços mais Procurados*/
+
+.services-section {
+  background-color: #f0f0f0;
+  padding: 40px 20px; 
+  border-radius: 8px; 
+  margin-bottom: 0px; 
+}
+
+/* Título da seção */
+.section-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: left; 
+  padding-left: 10px; 
+}
+
+.section-title::after {
+  content: ""; /* Cria o pseudo-elemento */
+  display: block; /* Faz a linha aparecer abaixo do título */
+  width: 300px; /* Largura da linha (ajuste conforme necessário) */
+  height: 4px; /* Espessura da linha */
+  background-color: #89ffdb; /* Cor verde */
+  margin-top: 5px; /* Espaçamento entre o título e a linha */
+}
+
+/* Container dos serviços */
+.services-container {
   display: flex;
-  flex-direction: column; 
-  align-items: center; 
-}
-
-.logo-image {
-  width: 300px; /* Ajuste o tamanho conforme necessário */
-  height: auto; /* Mantém as proporções da logo */
-  margin-right: 20px; /* Adiciona um deslocamento à direita */
-  margin-top: 30px;
-}
-
-.footer-content {
-  display: flex; 
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap; 
+  gap: 5px; 
   justify-content: space-between; 
-  width: 100%;
-  max-width: 1200px; 
-  padding: 0 50px; 
 }
 
-.footer-links {
-  display: flex; 
-  justify-content: space-between;
-  gap: 100px; /* Espaçamento horizontal entre as colunas */
-  flex-wrap: wrap;
-}
-
-.footer-section {
-  flex: 1; 
+/* Card de serviço */
+.service-card {
+  background-color: #fff; 
+  border: 1px solid #ddd; 
+  border-radius: 8px; 
+  padding: 10px; 
+  width: calc(20% - 40px); 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
   text-align: center; 
+  transition: transform 0.3s;
 }
 
-.footer-section h3 {
-  font-size: 18px; 
-  margin-bottom: 10px; 
-  font-weight: bold; 
+/* Efeito ao passar o mouse */
+.service-card:hover {
+  transform: scale(1.05); /* Leve aumento */
 }
 
-.footer-section ul {
-  list-style: none; 
-  padding: 0; 
+/* Imagem do serviço */
+.service-image {
+  width: 70%; /* Ocupa toda a largura do card */
+  border-radius: 8px; /* Bordas arredondadas */
+  margin-bottom: 3px; /* Espaço abaixo da imagem */
 }
 
-.footer-section ul li {
-  margin: 8px 0; 
+/* Título do serviço */
+.service-title {
+  font-size: 18px; /* Tamanho do texto */
+  font-weight: bold; /* Negrito */
+  margin-bottom: 10px; /* Espaço abaixo do título */
 }
 
-.footer-section ul li a {
-  color: #ccc; 
-  text-decoration: none; 
-  transition: color 0.3s; 
+/* Localização */
+.service-location {
+  font-size: 14px; /* Texto menor */
+  color: #666; /* Cinza suave */
+  margin-bottom: 10px; /* Espaço abaixo da localização */
 }
 
-.footer-section ul li a:hover {
-  color: #00d1a0; 
+/* Avaliação */
+.service-rating {
+  font-size: 14px; /* Texto menor */
+  color: #00d1a0; /* Verde */
 }
 
-.footer-contact {
+/* Link "Ver mais" */
+.view-more {
+  display: block; /* Mostra como linha separada */
+  text-align: right; /* Alinha à direita */
+  margin-top: 20px; /* Espaço acima do link */
+  font-size: 14px; /* Texto menor */
+  color: #00d1a0; /* Cor verde */
+  text-decoration: none; /* Remove o sublinhado */
+}
+
+.view-more:hover {
+  text-decoration: underline; /* Adiciona sublinhado ao passar o mouse */
+}
+
+
+/* Sobre Nos */
+.about-section {
+  background-color: #D9D9D9; 
+  padding: 40px 20px; 
   display: flex;
-  flex-direction: column;  
-  align-items: center;
   justify-content: center;
-  margin: 0 auto;
-
 }
 
-.footer-social {
-  margin-bottom: 10px; /* Espaçamento entre os ícones e o botão */
+.about-content {
+  display: flex;
+  max-width: 1200px; /* Largura máxima da seção */
+  width: 100%;
+  gap: 20px; /* Espaçamento entre texto e imagem */
 }
 
-.footer-social-logo {
-  width: 100px;
-  height: auto;
+.about-text {
+  flex: 1;
+  text-align: left;
 }
 
-.contact-button {
-  background-color: #00d1a0; 
-  color: #fff; 
-  border: none; 
-  border-radius: 20px; 
-  padding: 10px 20px; 
-  font-size: 16px; 
-  font-weight: bold; 
-  cursor: pointer; 
-  transition: background-color 0.3s, transform 0.3s; 
-  margin-left: 0; /* Adiciona um deslocamento à direita */
+.about-text h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  position: relative; /* Necessário para o pseudo-elemento */
 }
 
-.contact-button:hover {
-  background-color: #00b089; 
-  transform: scale(1.05); 
+.about-text h2::after {
+  content: ""; 
+  display: block; 
+  width: 125px; 
+  height: 6px; 
+  background-color: #89ffdb; 
+  margin-top: 5px; 
 }
 
-.contact-button:active {
-  transform: scale(0.95); 
+.about-text p {
+  font-size: 16px;
+  line-height: 1.6; 
+  color: #333; 
 }
 
-
-.footer-bottom {
-  text-align: center; /* Centraliza o texto */
-  margin-top: 20px; /* Espaçamento entre o conteúdo e o rodapé inferior */
-  font-size: 14px; /* Tamanho do texto */
-  padding-top: 10px; /* Espaço acima da linha */
+.about-image {
+  flex: 1; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+.about-image img {
+  width: 100%; 
+  max-width: 300px;
+  height: auto; 
+}
 
 
 </style>

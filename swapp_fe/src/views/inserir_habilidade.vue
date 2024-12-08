@@ -1,10 +1,6 @@
 <template>
   <div>
-    <header class="header">
-      <nav>
-        <img src="@/assets/logo2.png" alt="Logo" class="logo" />
-      </nav>
-    </header>
+    <TheHeaderLogo />
     <div class="form-illustration-container">
       <div class="form-container">
         <h2>Anuncie uma Habilidade</h2>
@@ -30,6 +26,11 @@
             </select>
           </div>
   
+          <!-- Input de Valor, Localização, Título e Descrição -->
+          
+          <div class="form-group">
+            <input type="text" v-model="formData.value" placeholder="Valor Estimado (R$)" @input="formatCurrency" class="text-box" />
+          </div>
           <div class="form-group">
             <input type="text" v-model="formData.localization" placeholder="Localização" required class="text-box" />
           </div>
@@ -76,36 +77,40 @@
         </nav>
       </div>
     </div>
-    
-    <footer class="footer">
-      <p>Desenvolvido pelo Grupo Lima&copy;</p>
-    </footer>
+    <TheFooter />
   </div>
 </template>
 
 <script>
+import TheHeaderLogo from "@/components/TheHeaderLogo.vue";
+import TheFooter from "@/components/TheFooter.vue";
 import axios from "axios";
 
 export default {
   name: "InserirHabilidade",
+  components: {
+    TheHeaderLogo,
+    TheFooter,
+  },
   data() {
-  return {
-    formData: {
-      category: "",
-      subcategory: "",
-      localization: "",
-      title: "",
-      description: "",
-      photos: [], // Armazenará os arquivos de imagem
-    },
-    categories: [
-      { id: 1, name: "Assistência Técnica", subcategories: ["Computadores", "Eletrodomésticos"] },
-      { id: 2, name: "Aulas", subcategories: ["Matemática", "Idiomas", "Música"] },
-      { id: 3, name: "Serviços Domésticos", subcategories: ["Limpeza", "Cozinha", "Manutenção"] },
-    ],
-    subcategories: [],
-  };
-},
+    return {
+      formData: {
+        category: "",
+        subcategory: "",
+        localization: "",
+        title: "",
+        description: "",
+        value: "", // Valor estimado no formato moeda
+        photos: [], // Armazenará os arquivos de imagem
+      },
+      categories: [
+        { id: 1, name: "Assistência Técnica", subcategories: ["Computadores", "Eletrodomésticos"] },
+        { id: 2, name: "Aulas", subcategories: ["Matemática", "Idiomas", "Música"] },
+        { id: 3, name: "Serviços Domésticos", subcategories: ["Limpeza", "Cozinha", "Manutenção"] },
+      ],
+      subcategories: [],
+    };
+  },
   methods: {
     updateSubcategories() {
       const selectedCategory = this.categories.find(
@@ -124,6 +129,19 @@ export default {
     getPhotoPreview(file) {
       return URL.createObjectURL(file); // Cria uma URL local para pré-visualizar as imagens
     },
+    formatCurrency(event) {
+      // Remove caracteres que não são números
+      let value = event.target.value.replace(/\D/g, "");
+
+      // Converte para formato de moeda brasileiro
+      value = (value / 100).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      });
+
+      // Atualiza o modelo de dados
+      this.formData.value = value;
+    },
     async submitForm() {
       const formData = new FormData();
       formData.append("category", this.formData.category);
@@ -131,6 +149,7 @@ export default {
       formData.append("localization", this.formData.localization);
       formData.append("title", this.formData.title);
       formData.append("description", this.formData.description);
+      formData.append("value", this.formData.value);
 
       // Adiciona as imagens ao FormData
       this.formData.photos.forEach((file, index) => {
@@ -153,6 +172,7 @@ export default {
   },
 };
 </script>
+
 
 
 <style scoped>
@@ -242,13 +262,6 @@ body {
   margin-bottom: 15px;
 }
 
-.footer {
-  background-color: #D9D9D9;
-  color: #404040;
-  text-align: center;
-  padding: 10px 0;
-  font-size: 14px;
-}
 
 .description-box {
   width: 300px;
