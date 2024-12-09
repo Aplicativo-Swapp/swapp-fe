@@ -191,6 +191,8 @@ export default {
         enableEdit(field) {
             this.editableFields[field] = true;
         },
+
+
         async fetchAddressFromCep() {
             if (!this.formData.cep) return;
 
@@ -208,11 +210,24 @@ export default {
                 alert("Erro ao buscar o CEP. Verifique e tente novamente.");
             }
         },
-        saveChanges() {
+        async saveChanges() {
+            try {
+            // Enviar dados atualizados para o backend via PUT
+            const response = await axios.put('/api/profile', this.formData);
             alert("Alterações salvas com sucesso!");
+
+            // Atualizar os dados na tela via GET
+            const updatedProfile = await axios.get('/api/profile');
+            this.formData = updatedProfile.data;
+
+            // Desabilitar edição nos campos
             for (const key in this.editableFields) {
                 this.editableFields[key] = false;
             }
+        } catch (error) {
+            console.error("Erro ao salvar alterações:", error);
+            alert("Erro ao salvar alterações. Tente novamente.");
+        }
         },
         cancelChanges() {
             alert("Alterações canceladas!");

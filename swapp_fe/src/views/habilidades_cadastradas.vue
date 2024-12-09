@@ -1,51 +1,73 @@
 <template>
     <div>
-        <TheHeaderMenu />
-            <div class="habilidades-cadastradas">
-            <h1>Suas Habilidades Cadastradas</h1>
-            <div class="habilidades-lista">
-                <div v-for="(habilidade, index) in habilidades" :key="index" class="habilidade-item">
-                <img src="@/assets/Aulas.png" alt="Ícone de habilidade" />
-                <div class="habilidade-info">
-                    <h2>{{ habilidade.titulo }}</h2>
-                </div>
-                <button class="editar-btn" @click="editarHabilidade(habilidade.id)">Editar</button>
-                </div>
+      <TheHeaderMenu />
+      <div class="habilidades-cadastradas">
+        <h1>Suas Habilidades Cadastradas</h1>
+        <div v-if="habilidades.length > 0" class="habilidades-lista">
+          <div
+            v-for="habilidade in habilidades"
+            :key="habilidade.id"
+            class="habilidade-item"
+          >
+            <img
+              :src="habilidade.foto"
+              alt="Ícone de habilidade"
+              class="habilidade-foto"
+            />
+            <div class="habilidade-info">
+              <h2>{{ habilidade.titulo }}</h2>
             </div>
+            <button class="editar-btn" @click="editarHabilidade(habilidade.id)">
+              Editar
+            </button>
+          </div>
         </div>
-        <TheFooterSimp />
+        <div v-else>
+          <p>Você ainda não cadastrou habilidades.</p>
+        </div>
+      </div>
+      <TheFooterSimp />
     </div>
   </template>
+  
   <script>
-
-import TheFooterSimp from "@/components/TheFooterSimp.vue";
-import TheHeaderMenu from "@/components/TheHeaderMenu.vue";
-
+  import TheFooterSimp from "@/components/TheFooterSimp.vue";
+  import TheHeaderMenu from "@/components/TheHeaderMenu.vue";
+  
   export default {
     name: "HabilidadesCadastradas",
     components: {
-        TheHeaderMenu,
-        TheFooterSimp,
+      TheHeaderMenu,
+      TheFooterSimp,
     },
     data() {
       return {
-        habilidades: [
-          { id: 1, titulo: "Título da Habilidade 1" },
-          { id: 2, titulo: "Título da Habilidade 2" },
-          { id: 3, titulo: "Título da Habilidade 3" },
-          { id: 4, titulo: "Título da Habilidade 4" },
-          { id: 5, titulo: "Título da Habilidade 5" },
-        ],
+        habilidades: [],
       };
     },
     methods: {
-      editarHabilidade(id) {
-        alert(`Editar habilidade com ID: ${id}`);
-        // Redirecione para a página de edição ou abra um modal
+      async buscarHabilidades() {
+        try {
+          const response = await fetch("/api/usuario/habilidades"); // Atualize o endpoint
+          if (response.ok) {
+            this.habilidades = await response.json();
+          } else {
+            console.error("Erro ao buscar habilidades:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Erro ao buscar habilidades:", error);
+        }
       },
+      editarHabilidade(id) {
+        this.$router.push(`/editar-habilidade/${id}`); // Navega para a página de edição
+      },
+    },
+    mounted() {
+      this.buscarHabilidades(); // Busca as habilidades ao carregar o componente
     },
   };
   </script>
+  
   
   <style scoped>
   .habilidades-cadastradas {
