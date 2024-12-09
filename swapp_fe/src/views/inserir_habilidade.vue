@@ -114,8 +114,7 @@ export default {
   methods: {
     updateSubcategories() {
       const selectedCategory = this.categories.find(
-        (category) => category.name === this.formData.category
-      );
+        (category) => category.name === this.formData.category);
       this.subcategories = selectedCategory
         ? selectedCategory.subcategories.map((name, index) => ({ id: index, name }))
         : [];
