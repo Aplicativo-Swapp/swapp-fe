@@ -34,6 +34,7 @@ export default {
   data() {
     return {
       usuarioNome: "", // Nome do usuário será armazenado aqui
+      showPopup: false, // Adicionado para controlar o estado do popup
     };
   },
   methods: {
