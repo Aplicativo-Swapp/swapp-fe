@@ -39,7 +39,6 @@
           <div class="form-group">
             <textarea type="text" v-model="formData.description" placeholder="Descrição" required class="description-box"></textarea>
           </div>
-  
           
           <div class="form-group">
             <!-- Botão de upload com miniaturas -->
@@ -49,9 +48,9 @@
                   <span class="placeholder-text">Adicionar Foto</span>
                 </template>
                 <template v-else>
-                  <template v-for="(photo, index) in formData.photos.slice(0, 3)" :key="index">
-                    <img v-if="index < 2 || formData.photos.length <= 3" :src="getPhotoPreview(photo)" alt="Pré-visualização" class="thumbnail" />
-                    <div v-else class="more-indicator">
+                  <template v-for="(photo, index) in formData.photos.slice(0, 3)">
+                    <img v-if="index < 2 || formData.photos.length <= 3" :key="'photo-' + index" :src="getPhotoPreview(photo)" alt="Pré-visualização" class="thumbnail"/>
+                    <div v-else :key="'indicator-' + index" class="more-indicator">
                       +{{ formData.photos.length - 2 }}
                     </div>
                   </template>
@@ -60,7 +59,6 @@
             </label>
             <input id="photo-upload" type="file" @change="handleFileUpload" accept="image/*" multiple class="photo-input" />
           </div>
-  
           
           <button type="submit">Anunciar</button>
         </form>
