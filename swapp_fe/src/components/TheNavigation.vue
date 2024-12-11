@@ -14,6 +14,15 @@
                 <li class="nav-item">
                     <router-link to="/inserir-habilidade" class= "nav-link">Inserir Habilidade</router-link>
                 </li>
+                <li class="nav-item">
+                    <router-link to="/editar-perfil" class= "nav-link">Editar Perfil</router-link>
+                </li>
+                <li class="nav-item">
+                    <router-link to="/habilidades-cadastradas" class= "nav-link">Habilidades Cadastradas</router-link>
+                </li>
+                <li class="nav-item">
+                    <router-link to="/editar-senha" class= "nav-link">Editar Senha</router-link>
+                </li>
             </ul>
         </div>
     </nav>

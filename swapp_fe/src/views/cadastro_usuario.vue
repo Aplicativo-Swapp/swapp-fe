@@ -1,10 +1,7 @@
 <template>
   <div>
-    <header class="header">
-      <nav>
-        <img src="@/assets/logo2.png" alt="Logo" class="logo" />
-      </nav>
-    </header>
+
+    <TheHeader />
 
     <div class="form-container">
       <div class="profile-image-container">
@@ -63,9 +60,13 @@
 
 <script>
 import axios from "axios";
+import TheHeader from "@/components/TheHeaderLogo.vue";
 
 export default {
   name: "CadastroUsuario",
+  components: {
+    TheHeader
+  },
   data() {
     return {
       formData: {
@@ -116,26 +117,6 @@ export default {
 </script>
 
 <style scoped>
-.header {
-  background-color: #14241F;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-body {
-  background-color: #ececec;
-  margin: 0;
-  font-family: Arial, sans-serif;
-  min-height: 100vh; 
-  display: flex;
-  flex-direction: column;
-}
-
-#app {
-  flex: 1; 
-}
 
 .logo {
   width: 200px;
