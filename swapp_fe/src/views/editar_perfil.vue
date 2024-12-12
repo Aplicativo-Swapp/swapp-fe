@@ -2,11 +2,9 @@
     <div>
         <!-- Cabeçalho -->
         <TheHeader />
-
         <!-- Formulário de edição -->
         <div class="form-container">
             <h2>Editar Perfil</h2>
-
             <!-- Foto de Perfil -->
             <div class="profile-image-container">
                 <img :src="profileImage" alt="Foto de Perfil" class="login" />
@@ -14,7 +12,6 @@
                 <input type="file" ref="fileInput" accept="image/*" class="file-input" @change="handleFileUpload"
                     hidden />
             </div>
-
             <form @submit.prevent="saveChanges">
                 <!-- Nome -->
                 <div class="form-group">
@@ -25,7 +22,6 @@
                         <button type="button" class="edit-button" @click="enableEdit('name')">Editar</button>
                     </div>
                 </div>
-
                 <!-- Sobrenome -->
                 <div class="form-group">
                     <label>Sobrenome</label>
@@ -35,7 +31,6 @@
                         <button type="button" class="edit-button" @click="enableEdit('surname')">Editar</button>
                     </div>
                 </div>
-
                 <!-- Email -->
                 <div class="form-group">
                     <label for="email">Email</label>
@@ -45,7 +40,6 @@
                         <button type="button" class="edit-button" @click="enableEdit('email')">Editar</button>
                     </div>
                 </div>
-
                 <!-- Data de Nascimento -->
                 <div class="form-group">
                     <label for="birthdate">Data de Nascimento</label>
@@ -55,7 +49,6 @@
                         <button type="button" class="edit-button" @click="enableEdit('birthdate')">Editar</button>
                     </div>
                 </div>
-
                 <!-- Gênero -->
                 <div class="form-group">
                     <label for="gender">Gênero</label>
@@ -70,7 +63,6 @@
                         <button type="button" class="edit-button" @click="enableEdit('gender')">Editar</button>
                     </div>
                 </div>
-
                 <!-- CEP -->
                 <div class="form-group">
                     <label for="cep">CEP</label>
@@ -80,8 +72,6 @@
                         <button type="button" class="edit-button" @click="enableEdit('cep')">Editar</button>
                     </div>
                 </div>
-
-
                 <!-- Estado -->
                 <div class="form-group">
                     <label>Estado</label>
@@ -89,8 +79,6 @@
                         <input type="text" v-model="formData.state" readonly placeholder="Estado" />
                     </div>
                 </div>
-
-
                 <!-- Cidade -->
                 <div class="form-group">
                     <label>Cidade</label>
@@ -98,7 +86,6 @@
                         <input type="text" v-model="formData.city" readonly placeholder="Cidade" />
                     </div>
                 </div>
-
                 <!-- Endereço -->
                 <div class="form-group">
                     <label>Endereço</label>
@@ -106,7 +93,6 @@
                         <input type="text" v-model="formData.address" readonly placeholder="Endereço" />
                     </div>
                 </div>
-
                 <!-- Número e Complemento -->
                 <div class="form-group">
                     <label>Número</label>
@@ -124,7 +110,6 @@
                         <button type="button" class="edit-button" @click="enableEdit('complement')">Editar</button>
                     </div>
                 </div>
-
                 <!-- Botões de Ação -->
                 <div class="action-buttons">
                     <button type="submit" class="save-button">Salvar</button>
@@ -132,18 +117,14 @@
                 </div>
             </form>
         </div>
-
         <!-- Rodapé -->
         <TheFooter />
     </div>
 </template>
-
-
 <script>
 import axios from "axios";
 import TheFooter from "@/components/TheFooter.vue";
 import TheHeader from "@/components/TheHeaderLogo.vue";
-
 export default {
     name: "EditarPerfil",
     components: {
@@ -191,11 +172,8 @@ export default {
         enableEdit(field) {
             this.editableFields[field] = true;
         },
-
-
         async fetchAddressFromCep() {
             if (!this.formData.cep) return;
-
             try {
                 const response = await axios.get(`https://viacep.com.br/ws/${this.formData.cep}/json/`);
                 if (response.data.erro) {
@@ -210,24 +188,11 @@ export default {
                 alert("Erro ao buscar o CEP. Verifique e tente novamente.");
             }
         },
-        async saveChanges() {
-            try {
-            // Enviar dados atualizados para o backend via PUT
-            const response = await axios.put('/api/profile', this.formData);
+        saveChanges() {
             alert("Alterações salvas com sucesso!");
-
-            // Atualizar os dados na tela via GET
-            const updatedProfile = await axios.get('/api/profile');
-            this.formData = updatedProfile.data;
-
-            // Desabilitar edição nos campos
             for (const key in this.editableFields) {
                 this.editableFields[key] = false;
             }
-        } catch (error) {
-            console.error("Erro ao salvar alterações:", error);
-            alert("Erro ao salvar alterações. Tente novamente.");
-        }
         },
         cancelChanges() {
             alert("Alterações canceladas!");
@@ -235,8 +200,6 @@ export default {
     },
 };
 </script>
-
-
 <style scoped>
 /* Estilo para o contêiner da imagem de perfil */
 .profile-image-container {
@@ -246,7 +209,6 @@ export default {
     width: 100%;
     margin: 20px 0;
 }
-
 .profile-image-container img {
     width: 100px;
     height: 100px;
@@ -256,7 +218,6 @@ export default {
     padding: 5px;
     background-color: #f9f9f9;
 }
-
 .change-photo-button {
     margin-top: 10px;
     padding: 8px 16px;
@@ -267,15 +228,12 @@ export default {
     font-size: 14px;
     cursor: pointer;
 }
-
 .change-photo-button:hover {
     background-color: #76e3c3;
 }
-
 .file-input {
     display: none;
 }
-
 /* Estilo geral do formulário */
 .editar-perfil {
     display: flex;
@@ -284,7 +242,6 @@ export default {
     padding: 20px;
     background-color: #f9f9f9;
 }
-
 .form-container {
     max-width: 400px;
     margin: 20px auto;
@@ -293,24 +250,20 @@ export default {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-
 h2 {
     text-align: center;
     margin-bottom: 20px;
 }
-
 /* Estilo dos grupos de formulário */
 .form-group {
     margin-bottom: 15px;
 }
-
 /* Estilo do contêiner de entrada */
 .input-container {
     display: flex;
     align-items: center;
     position: relative;
 }
-
 /* Estilo para os campos de entrada */
 .input-container input {
     flex: 1;
@@ -321,7 +274,6 @@ h2 {
     font-size: 14px;
     background-color: #f9f9f9;
 }
-
 /* Estilo para os campos apenas leitura */
 .input-container input[readonly] {
     background-color: #eaeaea;
@@ -330,7 +282,6 @@ h2 {
     cursor: not-allowed;
     /* Indicador de campo não editável */
 }
-
 /* Botão "Editar" dentro do campo */
 .edit-button {
     position: absolute;
@@ -350,19 +301,16 @@ h2 {
     transition: all 0.3s ease;
     /* Transição suave ao passar o mouse */
 }
-
 .edit-button:hover {
     background-color: #14241F;
     /* Fundo preenchido ao passar o mouse */
     color: #fff;
 }
-
 .edit-button:disabled {
     background-color: #eaeaea;
     color: #999;
     cursor: not-allowed;
 }
-
 /* Select personalizado */
 .select-gender {
     width: 100%;
@@ -373,18 +321,15 @@ h2 {
     background-color: #f9f9f9;
     color: #333;
 }
-
 .select-gender:disabled {
     background-color: #eaeaea;
     color: #999;
 }
-
 /* Estilo dos botões de ação (Salvar e Cancelar) */
 .action-buttons {
     display: flex;
     justify-content: space-between;
 }
-
 .save-button {
     background-color: #89FFDB;
     padding: 8px 16px;
@@ -394,11 +339,9 @@ h2 {
     cursor: pointer;
     transition: all 0.3s ease;
 }
-
 .save-button:hover {
     background-color: #76e3c3;
 }
-
 .cancel-button {
     background-color: #FF6767;
     color: white;
@@ -409,7 +352,6 @@ h2 {
     cursor: pointer;
     transition: all 0.3s ease;
 }
-
 .cancel-button:hover {
     background-color: #e65e5e;
 }
