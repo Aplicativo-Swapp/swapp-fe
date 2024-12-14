@@ -184,38 +184,60 @@ export default {
             showDeleteModal: false, // Controle do modal de deletar conta
             confirmEmail: "", // E-mail inserido no modal
             confirmPassword: "", // Senha inserida no modal
+            authToken: null, // Armazena o Token de autenticação
         };
     },
     mounted() {
+        this.authToken = localStorage.getItem("authToken"); // Recupera o token armazenado
+        if (!this.authToken) {
+            alert("Usuário não autenticado. Faça login novamente.");
+            this.$router.push("/login"); // Redireciona para a página de login
+            return;
+        }
         this.getUserData(); // Carrega os dados do perfil quando a página é montada
     },
     methods: {
-        // GET: Busca dados do backend
+        // GET: Busca dados do usuário autenticado no backend
         async getUserData() {
             try {
-                const response = await axios.get('/api/user/profile/'); // Mudar o endpoint para BE
+                const response = await axios.get(
+                    "http://localhost:8000/api/users/detail/",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${this.authToken}`, // Passa o token no cabeçalho
+                        },
+                    }
+                );
                 this.formData = {
                     ...this.formData,
                     ...response.data, // Atualiza o formData com os dados recebidos
                 };
             } catch (error) {
-                console.error('Erro ao buscar os dados do usuário:', error);
-                alert('Erro ao carregar os dados do perfil. Tente novamente.');
+                console.error("Erro ao buscar os dados do usuário:", error);
+                alert("Erro ao carregar os dados do perfil. Tente novamente.");
             }
         },
 
-        // PUT: Atualiza os dados no backend
+        // PUT: Atualiza os dados no backend para o usuário autenticado
         async saveChanges() {
             try {
-                await axios.put('/api/user/profile/', this.formData); // Mudar o endpoint para BE
-                alert('Alterações salvas com sucesso!');
+                await axios.put(
+                    "http://localhost:8000/api/users/update/",
+                    this.formData,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${this.authToken}`, // Passa o token no cabeçalho
+                        },
+                    }
+                );
+                alert("Alterações salvas com sucesso!");
                 this.getUserData(); // Atualiza os dados na tela
                 for (const key in this.editableFields) {
                     this.editableFields[key] = false; // Torna todos os campos não editáveis novamente
                 }
             } catch (error) {
-                console.error('Erro ao salvar alterações:', error);
-                alert('Erro ao salvar as alterações. Tente novamente.');
+                console.error("Erro ao salvar alterações:", error);
+                alert("Erro ao salvar as alterações. Tente novamente.");
             }
         },
 
@@ -271,13 +293,31 @@ export default {
             this.confirmPassword = ""; // Limpa o campo de senha
         },
 
-        confirmDeleteAccount() {
+         // DELETE: Exclui a conta do usuário autenticado
+         async confirmDeleteAccount() {
             if (
                 this.confirmEmail === this.formData.email &&
                 this.confirmPassword.trim() !== ""
             ) {
-                alert("Conta deletada com sucesso!"); // Substitua pela lógica de exclusão real
-                this.closeDeleteModal(); // Fecha o modal
+                try {
+                    await axios.delete(
+                        "http://localhost:8000/api/users/delete/",
+                        {
+                            headers: {
+                                Authorization: `Bearer ${this.authToken}`,
+                            },
+                            data: {
+                                password: this.confirmPassword, // Envia a senha para confirmação
+                            },
+                        }
+                    );
+                    alert("Conta deletada com sucesso!");
+                    this.closeDeleteModal();
+                    this.$router.push("/login"); // Redireciona para a página de login
+                } catch (error) {
+                    console.error("Erro ao deletar a conta:", error);
+                    alert("Erro ao deletar a conta. Tente novamente.");
+                }
             } else {
                 alert("O e-mail ou senha está incorreto.");
             }
