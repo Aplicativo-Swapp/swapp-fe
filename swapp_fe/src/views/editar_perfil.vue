@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- Cabeçalho -->
-        <TheHeader />
+        <TheHeaderMenu />
         <!-- Formulário de edição -->
         <div class="form-container">
             <h2>Editar Perfil</h2>
@@ -110,25 +110,49 @@
                         <button type="button" class="edit-button" @click="enableEdit('complement')">Editar</button>
                     </div>
                 </div>
+
                 <!-- Botões de Ação -->
                 <div class="action-buttons">
                     <button type="submit" class="save-button">Salvar</button>
                     <button type="button" class="cancel-button" @click="cancelChanges">Cancelar</button>
                 </div>
+                <div class="delete-account-container">
+                    <span type="button" class="delete-account-link" @click="openDeleteModal">Excluir Conta</span>
+                </div>
             </form>
         </div>
+
+        <!-- Modal de Confirmação -->
+        <div v-if="showDeleteModal" class="modal-overlay">
+            <div class="modal">
+                <h3>Você tem certeza de que deseja deletar sua conta?</h3>
+                <p>Confirme seu e-mail e senha para continuar:</p>
+                <div class="modal-inputs">
+                    <input type="email" v-model="confirmEmail" placeholder="E-mail cadastrado" />
+                    <input type="password" v-model="confirmPassword" placeholder="Senha" />
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-confirm-button" @click="confirmDeleteAccount">Sim</button>
+                    <button class="modal-cancel-button" @click="closeDeleteModal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Rodapé -->
         <TheFooter />
+
     </div>
 </template>
+
 <script>
 import axios from "axios";
 import TheFooter from "@/components/TheFooter.vue";
-import TheHeader from "@/components/TheHeaderLogo.vue";
+import TheHeaderMenu from "@/components/TheHeaderMenu.vue";
+
 export default {
     name: "EditarPerfil",
     components: {
-        TheHeader,
+        TheHeaderMenu,
         TheFooter,
     },
     data() {
@@ -157,25 +181,69 @@ export default {
                 number: false,
                 complement: false,
             },
+            showDeleteModal: false, // Controle do modal de deletar conta
+            confirmEmail: "", // E-mail inserido no modal
+            confirmPassword: "", // Senha inserida no modal
         };
     },
+    mounted() {
+        this.getUserData(); // Carrega os dados do perfil quando a página é montada
+    },
     methods: {
+        // GET: Busca dados do backend
+        async getUserData() {
+            try {
+                const response = await axios.get('/api/user/profile/'); // Mudar o endpoint para BE
+                this.formData = {
+                    ...this.formData,
+                    ...response.data, // Atualiza o formData com os dados recebidos
+                };
+            } catch (error) {
+                console.error('Erro ao buscar os dados do usuário:', error);
+                alert('Erro ao carregar os dados do perfil. Tente novamente.');
+            }
+        },
+
+        // PUT: Atualiza os dados no backend
+        async saveChanges() {
+            try {
+                await axios.put('/api/user/profile/', this.formData); // Mudar o endpoint para BE
+                alert('Alterações salvas com sucesso!');
+                this.getUserData(); // Atualiza os dados na tela
+                for (const key in this.editableFields) {
+                    this.editableFields[key] = false; // Torna todos os campos não editáveis novamente
+                }
+            } catch (error) {
+                console.error('Erro ao salvar alterações:', error);
+                alert('Erro ao salvar as alterações. Tente novamente.');
+            }
+        },
+
+        // Exibe input de arquivo
         triggerFileInput() {
             this.$refs.fileInput.click();
         },
+
+        // Processa upload de imagem
         handleFileUpload(event) {
             const file = event.target.files[0];
             if (file) {
                 this.profileImage = URL.createObjectURL(file);
             }
         },
+
+        // Permite editar um campo específico
         enableEdit(field) {
             this.editableFields[field] = true;
         },
+
+        // Busca endereço pelo CEP
         async fetchAddressFromCep() {
             if (!this.formData.cep) return;
             try {
-                const response = await axios.get(`https://viacep.com.br/ws/${this.formData.cep}/json/`);
+                const response = await axios.get(
+                    `https://viacep.com.br/ws/${this.formData.cep}/json/`
+                );
                 if (response.data.erro) {
                     alert("CEP não encontrado!");
                 } else {
@@ -188,18 +256,38 @@ export default {
                 alert("Erro ao buscar o CEP. Verifique e tente novamente.");
             }
         },
-        saveChanges() {
-            alert("Alterações salvas com sucesso!");
-            for (const key in this.editableFields) {
-                this.editableFields[key] = false;
-            }
-        },
+
         cancelChanges() {
             alert("Alterações canceladas!");
+        },
+
+        openDeleteModal() {
+            this.showDeleteModal = true; // Exibe o modal
+        },
+
+        closeDeleteModal() {
+            this.showDeleteModal = false; // Fecha o modal
+            this.confirmEmail = ""; // Limpa o campo de e-mail
+            this.confirmPassword = ""; // Limpa o campo de senha
+        },
+
+        confirmDeleteAccount() {
+            if (
+                this.confirmEmail === this.formData.email &&
+                this.confirmPassword.trim() !== ""
+            ) {
+                alert("Conta deletada com sucesso!"); // Substitua pela lógica de exclusão real
+                this.closeDeleteModal(); // Fecha o modal
+            } else {
+                alert("O e-mail ou senha está incorreto.");
+            }
         },
     },
 };
 </script>
+
+
+
 <style scoped>
 /* Estilo para o contêiner da imagem de perfil */
 .profile-image-container {
@@ -209,6 +297,7 @@ export default {
     width: 100%;
     margin: 20px 0;
 }
+
 .profile-image-container img {
     width: 100px;
     height: 100px;
@@ -218,6 +307,7 @@ export default {
     padding: 5px;
     background-color: #f9f9f9;
 }
+
 .change-photo-button {
     margin-top: 10px;
     padding: 8px 16px;
@@ -228,12 +318,20 @@ export default {
     font-size: 14px;
     cursor: pointer;
 }
+
 .change-photo-button:hover {
-    background-color: #76e3c3;
+    background-color: #00b089;
+    transform: scale(1.05);
 }
+
+.change-photo-button:active {
+    transform: scale(0.95);
+}
+
 .file-input {
     display: none;
 }
+
 /* Estilo geral do formulário */
 .editar-perfil {
     display: flex;
@@ -242,6 +340,7 @@ export default {
     padding: 20px;
     background-color: #f9f9f9;
 }
+
 .form-container {
     max-width: 400px;
     margin: 20px auto;
@@ -250,20 +349,24 @@ export default {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 h2 {
     text-align: center;
     margin-bottom: 20px;
 }
+
 /* Estilo dos grupos de formulário */
 .form-group {
     margin-bottom: 15px;
 }
+
 /* Estilo do contêiner de entrada */
 .input-container {
     display: flex;
     align-items: center;
     position: relative;
 }
+
 /* Estilo para os campos de entrada */
 .input-container input {
     flex: 1;
@@ -274,6 +377,7 @@ h2 {
     font-size: 14px;
     background-color: #f9f9f9;
 }
+
 /* Estilo para os campos apenas leitura */
 .input-container input[readonly] {
     background-color: #eaeaea;
@@ -282,6 +386,7 @@ h2 {
     cursor: not-allowed;
     /* Indicador de campo não editável */
 }
+
 /* Botão "Editar" dentro do campo */
 .edit-button {
     position: absolute;
@@ -301,16 +406,19 @@ h2 {
     transition: all 0.3s ease;
     /* Transição suave ao passar o mouse */
 }
+
 .edit-button:hover {
     background-color: #14241F;
     /* Fundo preenchido ao passar o mouse */
     color: #fff;
 }
+
 .edit-button:disabled {
     background-color: #eaeaea;
     color: #999;
     cursor: not-allowed;
 }
+
 /* Select personalizado */
 .select-gender {
     width: 100%;
@@ -321,15 +429,21 @@ h2 {
     background-color: #f9f9f9;
     color: #333;
 }
+
 .select-gender:disabled {
     background-color: #eaeaea;
     color: #999;
 }
+
 /* Estilo dos botões de ação (Salvar e Cancelar) */
 .action-buttons {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
 }
+
 .save-button {
     background-color: #89FFDB;
     padding: 8px 16px;
@@ -339,12 +453,19 @@ h2 {
     cursor: pointer;
     transition: all 0.3s ease;
 }
+
 .save-button:hover {
-    background-color: #76e3c3;
+    background-color: #00b089;
+    transform: scale(1.05);
 }
+
+.save-button:active {
+    transform: scale(0.95);
+}
+
 .cancel-button {
     background-color: #FF6767;
-    color: white;
+    color: #fff;
     padding: 8px 16px;
     border: none;
     border-radius: 20px;
@@ -352,7 +473,114 @@ h2 {
     cursor: pointer;
     transition: all 0.3s ease;
 }
+
 .cancel-button:hover {
     background-color: #e65e5e;
+    transform: scale(1.05);
+}
+
+.cancel-button:active {
+    transform: scale(0.95);
+}
+
+/* Botão "Deletar Conta" */
+.delete-account-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+    width: 100%;
+}
+
+.delete-account-link {
+  color: #ff0000; 
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none; 
+  transition: color 0.3s ease;
+}
+
+.delete-account-link:hover {
+  color: #d90000; 
+}
+
+.delete-account-link:active {
+  color: #b00000; 
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal Container */
+.modal {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+/* Modal Inputs */
+.modal-inputs {
+    margin-top: 20px;
+}
+
+.modal-inputs input {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+/* Modal Buttons */
+.modal-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.modal-confirm-button {
+    background-color: #ff0000;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.modal-confirm-button:hover {
+    background-color: #d90000;
+}
+
+.modal-cancel-button {
+    background-color: #ccc;
+    color: #000;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.modal-cancel-button:hover {
+    background-color: #aaa;
 }
 </style>
