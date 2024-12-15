@@ -250,7 +250,6 @@ export default {
 
                 const formDataToSend = {
                     ...this.formData,
-                    ...this.formData.birth_date = new Date(...this.formData.birth_date).toISOString(),
                     gender: genderMapInverse[this.formData.gender] || null, // Converte para o formato esperado pelo backend
                 };
 
