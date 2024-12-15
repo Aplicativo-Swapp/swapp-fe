@@ -17,7 +17,7 @@
                 <div class="form-group">
                     <label>Nome</label>
                     <div class="input-container">
-                        <input type="text" v-model="formData.name" :readonly="!editableFields.name"
+                        <input type="text" v-model="formData.first_name" :readonly="!editableFields.name"
                             placeholder="Nome" />
                         <button type="button" class="edit-button" @click="enableEdit('name')">Editar</button>
                     </div>
@@ -26,7 +26,7 @@
                 <div class="form-group">
                     <label>Sobrenome</label>
                     <div class="input-container">
-                        <input type="text" v-model="formData.surname" :readonly="!editableFields.surname"
+                        <input type="text" v-model="formData.last_name" :readonly="!editableFields.surname"
                             placeholder="Sobrenome" />
                         <button type="button" class="edit-button" @click="enableEdit('surname')">Editar</button>
                     </div>
@@ -44,7 +44,7 @@
                 <div class="form-group">
                     <label for="birthdate">Data de Nascimento</label>
                     <div class="input-container">
-                        <input id="birthdate" type="date" v-model="formData.birthdate"
+                        <input id="birthdate" type="date" v-model="formData.birth_date"
                             :readonly="!editableFields.birthdate" placeholder="Data de Nascimento" />
                         <button type="button" class="edit-button" @click="enableEdit('birthdate')">Editar</button>
                     </div>
@@ -67,7 +67,7 @@
                 <div class="form-group">
                     <label for="cep">CEP</label>
                     <div class="input-container">
-                        <input id="cep" type="text" v-model="formData.cep" :readonly="!editableFields.cep"
+                        <input id="cep" type="text" v-model="formData.zip_code" :readonly="!editableFields.cep"
                             placeholder="CEP" @blur="fetchAddressFromCep" />
                         <button type="button" class="edit-button" @click="enableEdit('cep')">Editar</button>
                     </div>
@@ -159,12 +159,13 @@ export default {
         return {
             profileImage: "@/assets/login.png",
             formData: {
-                name: "",
-                surname: "",
+                profile_image: null,
+                first_name: "",
+                last_name: "",
                 email: "",
                 gender: "",
-                birthdate: "",
-                cep: "",
+                birth_date: "",
+                zip_code: "",
                 state: "",
                 city: "",
                 address: "",
@@ -172,45 +173,55 @@ export default {
                 complement: "",
             },
             editableFields: {
-                name: false,
-                surname: false,
+                first_name: false,
+                last_name: false,
                 email: false,
                 gender: false,
-                birthdate: false,
-                cep: false,
+                birth_date: false,
+                zip_code: false,
                 number: false,
                 complement: false,
             },
             showDeleteModal: false, // Controle do modal de deletar conta
             confirmEmail: "", // E-mail inserido no modal
             confirmPassword: "", // Senha inserida no modal
-            authToken: null, // Armazena o Token de autenticação
         };
     },
     mounted() {
-        this.authToken = localStorage.getItem("authToken"); // Recupera o token armazenado
-        if (!this.authToken) {
-            alert("Usuário não autenticado. Faça login novamente.");
-            this.$router.push("/login"); // Redireciona para a página de login
-            return;
-        }
         this.getUserData(); // Carrega os dados do perfil quando a página é montada
     },
     methods: {
         // GET: Busca dados do usuário autenticado no backend
         async getUserData() {
             try {
+                const token = localStorage.getItem("authToken"); // Obtém o token do localStorage
+
+                if (!token) {
+                    alert("Token de autenticação não encontrado. Faça login novamente.");
+                    this.$router.push({ name: "login" }); // Redireciona para login se o token estiver ausente
+                    return;
+                }
+
                 const response = await axios.get(
                     "http://localhost:8000/api/users/detail/",
                     {
                         headers: {
-                            Authorization: `Bearer ${this.authToken}`, // Passa o token no cabeçalho
+                            Authorization: `Bearer ${token}`, // Passa o token no cabeçalho Authorization
                         },
                     }
                 );
+
+                // Mapeamento de gênero recebido do backend
+                const genderMap = {
+                    male: "Masculino",
+                    female: "Feminino",
+                    other: "Outro",
+                };
+
                 this.formData = {
                     ...this.formData,
                     ...response.data, // Atualiza o formData com os dados recebidos
+                    gender: genderMap[response.data.gender] || "", // Converte para o formato esperado na interface
                 };
             } catch (error) {
                 console.error("Erro ao buscar os dados do usuário:", error);
@@ -221,15 +232,38 @@ export default {
         // PUT: Atualiza os dados no backend para o usuário autenticado
         async saveChanges() {
             try {
+
+                const token = localStorage.getItem("authToken"); // Obtém o token do localStorage
+
+                if (!token) {
+                    alert("Token de autenticação não encontrado. Faça login novamente.");
+                    this.$router.push({ name: "login" }); // Redireciona para login se o token estiver ausente
+                    return;
+                }
+
+                // Mapeamento inverso de gênero para envio ao backend
+                const genderMapInverse = {
+                    Masculino: "male",
+                    Feminino: "female",
+                    Outro: "other",
+                };
+
+                const formDataToSend = {
+                    ...this.formData,
+                    ...this.formData.birth_date = new Date(...this.formData.birth_date).toISOString(),
+                    gender: genderMapInverse[this.formData.gender] || null, // Converte para o formato esperado pelo backend
+                };
+
                 await axios.put(
                     "http://localhost:8000/api/users/update/",
-                    this.formData,
+                    formDataToSend,
                     {
                         headers: {
-                            Authorization: `Bearer ${this.authToken}`, // Passa o token no cabeçalho
+                            Authorization: `Bearer ${token}`, // Passa o token no cabeçalho Authorization
                         },
                     }
                 );
+
                 alert("Alterações salvas com sucesso!");
                 this.getUserData(); // Atualiza os dados na tela
                 for (const key in this.editableFields) {
@@ -261,10 +295,10 @@ export default {
 
         // Busca endereço pelo CEP
         async fetchAddressFromCep() {
-            if (!this.formData.cep) return;
+            if (!this.formData.zip_code) return;
             try {
                 const response = await axios.get(
-                    `https://viacep.com.br/ws/${this.formData.cep}/json/`
+                    `https://viacep.com.br/ws/${this.formData.zip_code}/json/`
                 );
                 if (response.data.erro) {
                     alert("CEP não encontrado!");
@@ -300,11 +334,19 @@ export default {
                 this.confirmPassword.trim() !== ""
             ) {
                 try {
+                    const token = localStorage.getItem("authToken"); // Obtém o token do localStorage
+
+                    if (!token) {
+                        alert("Token de autenticação não encontrado. Faça login novamente.");
+                        this.$router.push({ name: "login" }); // Redireciona para login se o token estiver ausente
+                        return;
+                    }
+
                     await axios.delete(
                         "http://localhost:8000/api/users/delete/",
                         {
                             headers: {
-                                Authorization: `Bearer ${this.authToken}`,
+                                Authorization: `Bearer ${token}`, // Passa o token no cabeçalho Authorization
                             },
                             data: {
                                 password: this.confirmPassword, // Envia a senha para confirmação
@@ -313,7 +355,7 @@ export default {
                     );
                     alert("Conta deletada com sucesso!");
                     this.closeDeleteModal();
-                    this.$router.push("/login"); // Redireciona para a página de login
+                    this.$router.push({ name: "login" }); // Redireciona para a página de login
                 } catch (error) {
                     console.error("Erro ao deletar a conta:", error);
                     alert("Erro ao deletar a conta. Tente novamente.");
