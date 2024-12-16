@@ -12,33 +12,21 @@
                 <h3>Filtros</h3>
                 <select v-model="selectedCategory">
                     <option value="">Todas as categorias</option>
-                    <template v-if="!isLoadingCategories">
-                        <option v-for="category in categories" :key="category.id" :value="category.name">
-                            {{ category.name }}
-                        </option>
-                    </template>
-                    <option v-else disabled>Carregando categorias...</option>
-                </select>
-                <select>
-                    <option>Subcategoria</option>
-                </select>
-                <select>
-                    <option>Localização</option>
                 </select>
             </aside>
 
             <!-- Services Grid -->
             <main class="services-grid">
-                <div class="service-card" v-for="service in filteredServices" :key="service.id">
-                    <img :src="service.image" alt="Imagem do serviço" class="service-image" />
+                <div class="service-card" v-for="service in services" :key="service.id_users">
                     <div class="service-info">
-                        <h2>{{ service.title }}</h2>
-                        <p>Localização: {{ service.location }}</p>
-                        <div class="rating">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
+                        <h2>Usuário {{ service.id_users }}</h2>
+                        <p>Habilidade: {{ service.habilidade }}</p>
+                        <p>Descrição: {{ service.descricao }}</p>
+                        <p>Valor: R$ {{ service.valor.toFixed(2) }}</p>
                     </div>
                     <div class="actions">
-                        <button @click="likeService(service.id)" class="btn-like">&#10084;</button>
-                        <button @click="dislikeService(service.id)" class="btn-dislike">&#10060;</button>
+                        <button @click="likeService(service.id_users)" class="btn-like">&#10084;</button>
+                        <button @click="dislikeService(service.id_users)" class="btn-dislike">&#10060;</button>
                     </div>
                 </div>
             </main>
@@ -46,7 +34,6 @@
 
         <!-- Footer -->
         <TheFooter />
-
     </div>
 </template>
 
@@ -63,66 +50,38 @@ export default {
     },
     data() {
         return {
-            services: [], // Inicia vazio e será preenchido pela API
-            categories: [], // Array para armazenar as categorias da API
-            isLoadingCategories: true,
-            selectedCategory: "",
+            services: [], // Dados processados da API
         };
     },
-    computed: {
-        filteredServices() {
-            if (!this.selectedCategory) {
-                return this.services;
-            }
-
-            return this.services.filter((service) => service.category === this.selectedCategory);
-        }
-    },
     methods: {
-        async fetchCategories() {
-            try {
-                const response = await axios.get("http://localhost:3000/services"); // Substituir pela URL correta da API
-                this.categories = response.data;
-            } catch (error) {
-                console.error("Erro ao buscar categorias:", error);
-            } finally {
-                this.isLoadingCategories = false;
-            }
-        },
         async fetchServices() {
             try {
-                const response = await axios.get("http://localhost:3000/services"); // Substituir pela URL correta da API
-                this.services = response.data;
+                // Substitua pela URL correta da sua API
+                const response = await axios.get("http://localhost:8081/obter_tudo");
+                this.services = response.data.map((item) => ({
+                    id_users: item.id_users,
+                    habilidade: `Sub-Habilidade ${item.id_sub_habilidade}`,
+                    descricao: item.descricao || "Sem descrição",
+                    valor: item.valor || 0,
+                }));
             } catch (error) {
                 console.error("Erro ao buscar serviços:", error);
             }
         },
         likeService(id) {
-            console.log(`Serviço ${id} curtido!`);
+            console.log(`Serviço do usuário ${id} curtido!`);
         },
         dislikeService(id) {
-            console.log(`Serviço ${id} descartado!`);
+            console.log(`Serviço do usuário ${id} descartado!`);
         },
     },
     mounted() {
-        this.fetchCategories();
         this.fetchServices(); // Busca os serviços ao carregar a página
     },
 };
 </script>
 
 <style scoped>
-.match-page {
-    font-family: Arial, sans-serif;
-    color: #333;
-}
-
-.search-bar {
-    flex: 1;
-    margin: 0 15px;
-    padding: 5px;
-}
-
 .page-title {
     text-align: center;
     margin: 20px 0;
@@ -158,12 +117,11 @@ export default {
     padding: 10px;
     text-align: center;
     background-color: #f9f9f9;
+    box-shadow: 2px 2px 8px #ddd;
 }
 
-.service-image {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
+.service-info h2 {
+    margin-bottom: 5px;
 }
 
 .actions {
