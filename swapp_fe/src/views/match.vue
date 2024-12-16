@@ -63,22 +63,7 @@ export default {
     },
     data() {
         return {
-            services: [
-                {
-                    id: 1,
-                    image: "https://via.placeholder.com/150",
-                    title: "Corte de cabelo",
-                    location: "Onde Judas Perdeu as Botas - BA",
-                    category: "Corte de cabelo",
-                },
-                {
-                    id: 2,
-                    image: "https://via.placeholder.com/150",
-                    title: "Pintura de parede",
-                    location: "Jacareí - SP",
-                    category: "Pintura de parede",
-                },
-            ],
+            services: [], // Inicia vazio e será preenchido pela API
             categories: [], // Array para armazenar as categorias da API
             isLoadingCategories: true,
             selectedCategory: "",
@@ -96,12 +81,20 @@ export default {
     methods: {
         async fetchCategories() {
             try {
-                const response = await axios.get("http://localhost:3000/categories"); // Substituir pela URL correta da API
+                const response = await axios.get("http://localhost:3000/services"); // Substituir pela URL correta da API
                 this.categories = response.data;
             } catch (error) {
                 console.error("Erro ao buscar categorias:", error);
             } finally {
                 this.isLoadingCategories = false;
+            }
+        },
+        async fetchServices() {
+            try {
+                const response = await axios.get("http://localhost:3000/services"); // Substituir pela URL correta da API
+                this.services = response.data;
+            } catch (error) {
+                console.error("Erro ao buscar serviços:", error);
             }
         },
         likeService(id) {
@@ -113,6 +106,7 @@ export default {
     },
     mounted() {
         this.fetchCategories();
+        this.fetchServices(); // Busca os serviços ao carregar a página
     },
 };
 </script>
