@@ -19,7 +19,7 @@
             <main class="services-grid">
                 <div class="service-card" v-for="service in services" :key="service.id_users">
                     <div class="service-info">
-                        <h2>Usuário {{ service.id_users }}</h2>
+                        <h2>{{ service.fullName }}</h2>
                         <p>Habilidade: {{ service.habilidade }}</p>
                         <p>Descrição: {{ service.descricao }}</p>
                         <p>Valor: R$ {{ service.valor.toFixed(2) }}</p>
@@ -60,7 +60,8 @@ export default {
                 const response = await axios.get("http://localhost:8081/obter_tudo");
                 this.services = response.data.map((item) => ({
                     id_users: item.id_users,
-                    habilidade: `Sub-Habilidade ${item.id_sub_habilidade}`,
+                    fullName: `${item.first_name} ${item.last_name}`,
+                    habilidade: item.nome_sub_habilidade || "Habilidade não especificada",
                     descricao: item.descricao || "Sem descrição",
                     valor: item.valor || 0,
                 }));
@@ -69,10 +70,10 @@ export default {
             }
         },
         likeService(id) {
-            console.log(`Serviço do usuário ${id} curtido!`);
+            alert(`Serviço do usuário ${id} curtido!`);
         },
         dislikeService(id) {
-            console.log(`Serviço do usuário ${id} descartado!`);
+            alert(`Serviço do usuário ${id} descartado!`);
         },
     },
     mounted() {
