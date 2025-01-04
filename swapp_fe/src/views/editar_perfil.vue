@@ -157,7 +157,7 @@ export default {
     },
     data() {
         return {
-            profileImage: "@/assets/login.png",
+            profileImage: require('@/assets/login.png'),
             formData: {
                 profile_image: null,
                 first_name: "",
@@ -173,12 +173,12 @@ export default {
                 complement: "",
             },
             editableFields: {
-                first_name: false,
-                last_name: false,
+                name: false,
+                surname: false,
                 email: false,
                 gender: false,
-                birth_date: false,
-                zip_code: false,
+                birthdate: false,
+                cep: false,
                 number: false,
                 complement: false,
             },
@@ -217,6 +217,8 @@ export default {
                     female: "Feminino",
                     other: "Outro",
                 };
+
+                this.profileImage = response.data.profile_picture_url || require('@/assets/login.png') 
 
                 this.formData = {
                     ...this.formData,
@@ -366,8 +368,6 @@ export default {
     },
 };
 </script>
-
-
 
 <style scoped>
 /* Estilo para o contêiner da imagem de perfil */
