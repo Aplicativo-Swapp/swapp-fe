@@ -56,14 +56,25 @@ export default {
 
         try {
           const response = await axios.post("http://localhost:8000/api/users/login/", {
-            email: this.formData.email,
-            password: this.formData.password,
+              email: this.formData.email,
+              password: this.formData.password,
           });
-          console.log("Resposta da API:", response.data);
-          alert("Login realizado com sucesso!");
-        } catch (error) {
-          console.error("Erro ao enviar dados:", error.response.data);
-          alert("Erro ao realizar login. Verifique os dados e Tente novamente.");
+
+          const { access, refresh, message } = response.data; 
+          if (access && refresh) {
+                   
+            // Armazena o token de acesso e o de atualização no local storage
+            localStorage.setItem("authToken", access);
+            localStorage.setItem("refreshToken", refresh);
+          
+            alert(message || "Login realizado com sucesso!");
+            this.$router.push({ name: "home" }); // Redireciona para a página principal
+          } else {  
+            alert("Falha ao obter token de autenticação.");
+          }          
+        } catch (error) {        
+          console.error("Erro ao enviar dados:", error.response?.data || error.message);
+          alert("Erro ao realizar login. Verifique os dados e tente novamente.");
         }
       },
     },

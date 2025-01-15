@@ -11,7 +11,7 @@
                 <!-- Senha Atual -->
                 <div class="form-group">
                     <div class="input-container">
-                        <input type="password" v-model="formData.currentPassword" placeholder="Senha Atual" />
+                        <input type="password" v-model="formData.currentPassword" placeholder="Senha Atual" required />
                     </div>
                 </div>
 
@@ -60,14 +60,22 @@ export default {
                 currentPassword: "",
                 newPassword: "",
                 confirmNewPassword: "",
-                surname: "",
+                first_name: "",
+                last_name: "",
                 email: "",
             },
             editableFields: {
-                surname: false,
+                first_name: false,
+                last_name: false,
                 email: false,
             },
         };
+    },
+    mounted() {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            this.$router.push({ name: "login" }); // Redireciona para a página de login
+        }
     },
     methods: {
         triggerFileInput() {
@@ -87,24 +95,47 @@ export default {
                 alert("As senhas não coincidem!");
                 return;
             }
-            // Lógica para enviar os dados
-            axios.post('/api/save-password', this.formData)
+
+            const token = localStorage.getItem("authToken"); // Obtém o token do localStorage
+
+            if (!token) {
+                alert("Token de autenticação não encontrado. Faça login novamente.");
+                this.$router.push({ name: "login" }); // Redireciona para login se o token estiver ausente
+                return;
+            }
+            // Enviando os dados para o backend
+            axios.put('http://localhost:8000/api/users/change-password/', this.formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
                 .then(() => {
                     alert("Senha alterada com sucesso!");
+                    this.resetForm(); // Limpando os campos do formulário
                     this.resetEditableFields();
                 })
-                .catch(() => {
-                    alert("Erro ao salvar alterações!");
+                .catch((error) => {
+                    if(error.response && error.response.data) {
+                        alert(error.response.data.error || "Erro ao alterar a senha!");                       
+                    } else {
+                        alert("Erro ao alterar a senha!");
+                    }
                 });
         },
         cancelChanges() {
             alert("Alterações canceladas!");
+            this.resetForm();
         },
         resetEditableFields() {
             for (const key in this.editableFields) {
                 this.editableFields[key] = false;
             }
-        }
+        },
+        resetForm() {
+            this.formData.confirmNewPassword = "";
+            this.formData.newPassword = "";
+            this.formData.currentPassword = "";
+        },
     }
 };
 </script>
