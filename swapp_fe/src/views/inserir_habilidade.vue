@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TheHeaderLogo />
+    <TheHeaderMenu />
     <div class="form-illustration-container">
       <div class="form-container">
         <h2>Anuncie uma Habilidade</h2>
@@ -80,14 +80,14 @@
 </template>
 
 <script>
-import TheHeaderLogo from "@/components/TheHeaderLogo.vue";
+import TheHeaderMenu from "@/components/TheHeaderMenu.vue";
 import TheFooter from "@/components/TheFooter.vue";
 import axios from "axios";
 
 export default {
   name: "InserirHabilidade",
   components: {
-    TheHeaderLogo,
+    TheHeaderMenu,
     TheFooter,
   },
   data() {
@@ -120,7 +120,7 @@ export default {
     },
     handleFileUpload(event) {
       const files = event.target.files;
-      this.formData.photos = Array.from(files); // Armazena todas as imagens selecionadas
+      this.formData.photos = [...this.formData.photos, ...Array.from(files)];
       console.log("Imagens selecionadas:", this.formData.photos);
     },
     getPhotoPreview(file) {
@@ -159,28 +159,18 @@ export default {
             "Content-Type": "multipart/form-data",
           },
         });
-        alert("Cadastro realizado com sucesso!");
+        alert("Habilidade anunciada com sucesso!");
         console.log("Resposta da API:", response.data);
       } catch (error) {
-        console.error("Erro ao registrar:", error.response?.data || error.message);
-        alert("Erro ao realizar cadastro. Verifique os dados e tente novamente.");
+        console.error("Erro ao cadastrar habilidade:", error.response?.data || error.message);
+        alert("Erro ao realizar o cadastro de habilidade. Verifique os dados e tente novamente.");
       }
     },
   },
 };
 </script>
 
-
-
 <style scoped>
-.header {
-  background-color: #14241F;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
 body {
   background-color: #ececec;
   margin: 0;

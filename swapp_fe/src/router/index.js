@@ -6,6 +6,7 @@ import InserirHabilidade from '@/views/inserir_habilidade.vue';
 import EditarPerfil from '@/views/editar_perfil.vue';
 import HabilidadesCadastradas from '@/views/habilidades_cadastradas.vue';
 import EditarSenha from '@/views/editar_senha.vue';
+import EditarHabilidade from '@/views/editar_habilidades.vue';
 import Match from '@/views/match.vue';
 
 
@@ -17,6 +18,8 @@ const routes = [
   { path: '/inserir-habilidade', component: InserirHabilidade, name: 'InserirHabilidade'},
   { path: '/editar-perfil', component: EditarPerfil, name: 'EditarPerfil' },
   { path: '/habilidades-cadastradas', component: HabilidadesCadastradas, name: 'HabilidadesCadastradas' },
+  { path: '/editar-senha', component: EditarSenha, name: 'EditarSenha' },
+  { path: '/editar-habilidade', component: EditarHabilidade, name: 'EditarHabilidade' },
   { path: '/editar-senha', component: EditarSenha, name: 'EditarSenha' },
   { path: '/match', component: Match, name: 'Match' },
 

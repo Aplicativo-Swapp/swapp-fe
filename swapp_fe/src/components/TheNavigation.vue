@@ -24,6 +24,9 @@
                     <router-link to="/editar-senha" class= "nav-link">Editar Senha</router-link>
                 </li>
                 <li class="nav-item">
+                    <router-link to="/editar-habilidade" class= "nav-link">Editar Habilidade</router-link>
+                </li>
+                <li class="nav-item">
                     <router-link to="/match" class= "nav-link">Match</router-link>
                 </li>
             </ul>

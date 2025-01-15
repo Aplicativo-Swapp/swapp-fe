@@ -29,7 +29,7 @@ export default {
       this.$emit("close");
     },
     navegar(destino) {
-      this.$router.push(`/${destino}`);
+      this.$router.push(`${destino}`);
       this.closePopup();
     },
     logout() {
