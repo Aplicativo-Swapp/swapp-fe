@@ -17,7 +17,7 @@
       <span>Olá, {{ usuarioNome }}</span>
       <div class="notification-section">
         <button @click="toggleNotifications" class="notification-button">
-          <img src="@/assets/notification.png" alt="Notificação" class="notification-icon" />
+          <img src="@/assets/notificacao.png" alt="Notificação" class="notification-icon" />
           <span v-if="notifications.length > 0" class="notification-count">
             {{ notifications.length }}
           </span>

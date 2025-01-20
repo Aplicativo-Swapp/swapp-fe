@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="match-page">
         <!-- Header -->
         <TheHeaderMenu />
 
@@ -37,12 +37,20 @@
                         <div class="rating">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
                     </div>
                     <div class="actions">
-                        <button @click="likeService(service.id)" class="btn-like">&#10084;</button>
-                        <button @click="dislikeService(service.id)" class="btn-dislike">&#10060;</button>
+                        <!-- Botão de Like com imagem match.png -->
+                        <button @click.stop="likeService(service.id)" class="btn-like">
+                            <img src="@/assets/match.png" alt="Curtir" class="action-icon" />
+                        </button>
+                        <!-- Botão de Dislike com imagem nao.png -->
+                        <button @click.stop="dislikeService(service.id)" class="btn-dislike">
+                            <img src="@/assets/nao.png" alt="Não Curtir" class="action-icon" />
+                        </button>
                     </div>
                 </div>
             </main>
         </div>
+        <!-- Popup -->
+        <CardPage v-if="isPopupOpen" :service="selectedService" @close="closePopup" />
 
         <!-- Footer -->
         <TheFooter />
@@ -54,6 +62,7 @@
 import axios from "axios";
 import TheFooter from "@/components/TheFooter.vue";
 import TheHeaderMenu from "@/components/TheHeaderMenu.vue";
+import CardPage from "@/components/Card.vue";
 
 export default {
     name: "MatchPage",
@@ -67,6 +76,8 @@ export default {
             categories: [], // Array para armazenar as categorias da API
             isLoadingCategories: true,
             selectedCategory: "",
+            isPopupOpen: false,
+            selectedService: null,
         };
     },
     computed: {
@@ -103,6 +114,14 @@ export default {
         dislikeService(id) {
             console.log(`Serviço ${id} descartado!`);
         },
+        openPopup(service) {
+            this.selectedService = service;
+            this.isPopupOpen = true;
+        },
+        closePopup() {
+            this.isPopupOpen = false;
+            this.selectedService = null;
+        },
     },
     mounted() {
         this.fetchCategories();
@@ -112,9 +131,24 @@ export default {
 </script>
 
 <style scoped>
+.action-icon {
+    width: 50px;   /* Largura da imagem */
+    height: 50px;  /* Altura da imagem */
+    object-fit: contain; /* Garante que a imagem não distorça */
+    pointer-events: none; /* Evita que o clique passe para a imagem */
+}
+
+.btn-like, .btn-dislike {
+    background-color: transparent; /* Remove fundo padrão do botão */
+    border: none; /* Remove a borda padrão */
+    cursor: pointer; /* Adiciona um cursor de clique */
+    padding: 0; /* Remove o espaçamento interno */
+}
+
+
 .match-page {
-    font-family: Arial, sans-serif;
     color: #333;
+    background-color: #ececec;
 }
 
 .search-bar {
@@ -153,11 +187,17 @@ export default {
 }
 
 .service-card {
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: 0px solid #ccc;
+    border-radius: 15px;
     padding: 10px;
     text-align: center;
-    background-color: #f9f9f9;
+    background-color: white;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Suaviza o efeito */
+}
+
+.service-card:hover {
+    transform: scale(1.05); /* Aplica o zoom */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adiciona uma sombra para destaque */
 }
 
 .service-image {
@@ -168,7 +208,8 @@ export default {
 
 .actions {
     display: flex;
-    justify-content: space-around;
+    justify-content: center; /* Centraliza os botões */
+    gap: 25px; /* Adiciona um espaçamento uniforme entre os botões */
     margin-top: 10px;
 }
 
@@ -188,3 +229,4 @@ export default {
     color: red;
 }
 </style>
+

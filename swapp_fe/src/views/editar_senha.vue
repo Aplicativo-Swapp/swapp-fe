@@ -39,20 +39,20 @@
         </div>
 
         <!-- Rodapé -->
-        <TheFooter />
+        <TheFooterSimp />
     </div>
 </template>
 
 <script>
 import axios from "axios";
-import TheFooter from "@/components/TheFooter.vue";
+import TheFooterSimp from "@/components/TheFooterSimp.vue";
 import TheHeader from "@/components/TheHeaderLogo.vue";
 
 export default {
     name: "EditarSenha",
     components: {
         TheHeader,
-        TheFooter,
+        TheFooterSimp,
     },
     data() {
         return {
