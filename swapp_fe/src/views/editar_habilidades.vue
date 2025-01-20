@@ -82,8 +82,8 @@
               </template>
               <template v-else>
                 <div class="photo-grid">
-                  <template v-for="(photo, index) in formData.photos">
-                    <div class="thumbnail-wrapper" :key="'photo-' + index">
+                  <template v-for="(photo, index) in formData.photos" :key="'photo-' + index">
+                    <div class="thumbnail-wrapper" >
                       <img :src="getPhotoPreview(photo)" alt="Thumbnail" />
                       <button class="delete-button" type="button" @click="removePhoto(index)">X</button>
                     </div>
