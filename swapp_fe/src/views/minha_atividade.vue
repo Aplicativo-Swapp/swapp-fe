@@ -60,6 +60,13 @@ export default {
       activeTab: "matchs", // Aba ativa inicial
     };
   },
+  created() {
+    // Obtém a aba da query string, se existir
+    const tabFromQuery = this.$route.query.tab;
+    if (tabFromQuery) {
+      this.activeTab = tabFromQuery;
+    }
+  },
   computed: {
     currentTabComponent() {
       // Mapeia as abas para os componentes correspondentes

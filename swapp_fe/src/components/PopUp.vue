@@ -9,26 +9,24 @@
         </div>
       </div>
       <ul class="popup-menu">
-        <ul class="popup-menu">
         <li @click="navegar('/')">Home Page</li>
         <li @click="navegar('/editar-perfil')">Editar Perfil</li>
         <li @click="navegar('/editar-senha')">Editar Senha</li>
         <li @click="navegar('/editar-habilidade')">Editar Habilidade</li>
         <li @click="toggleSubmenu">
-          Minha atividade
+          Minha Atividade
           <ul v-if="submenuVisible" class="popup-menu submenu">
-            <li @click="navegar('/opcao1')">Matchs</li>
-            <li @click="navegar('/opcao2')">Curtidas Recebidas</li>
-            <li @click="navegar('/opcao3')">Minhas Curtidas</li>
+            <li @click="navegar('/minha-atividade', 'matchs')">Matchs</li>
+            <li @click="navegar('/minha-atividade', 'curtidasRecebidas')">Curtidas Recebidas</li>
+            <li @click="navegar('/minha-atividade', 'minhasCurtidas')">Minhas Curtidas</li>
           </ul>
         </li>
         <li class="logout" @click="logout">Sair</li>
       </ul>
-      </ul>
     </div>
   </div>
 </template>
-  
+
 <script>
 export default {
   name: "PopupMenu",
@@ -41,8 +39,9 @@ export default {
     closePopup() {
       this.$emit("close");
     },
-    navegar(destino) {
-      this.$router.push(`${destino}`);
+    navegar(destino, aba = null) {
+      const route = aba ? { path: destino, query: { tab: aba } } : destino;
+      this.$router.push(route);
       this.closePopup();
     },
     logout() {
