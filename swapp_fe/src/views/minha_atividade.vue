@@ -93,7 +93,6 @@ export default {
   flex: 1;
 }
 
-/* Estilo da coluna lateral */
 .sidebar {
   width: 200px;
   height: min-content;
@@ -102,6 +101,9 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  border-radius: 0px 10px 10px 0px; 
+  margin-top: 100px; 
+
 }
 
 .sidebar-button {

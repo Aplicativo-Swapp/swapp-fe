@@ -188,7 +188,7 @@ export default {
 }
 
 .service-card {
-    border: 0px solid #ccc;
+    border: 0.5px solid #ccc;
     border-radius: 15px;
     padding: 10px;
     text-align: center;
