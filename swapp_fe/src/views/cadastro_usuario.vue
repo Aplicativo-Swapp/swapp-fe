@@ -152,10 +152,7 @@ export default {
 }
 
 .profile-image-container {
-  position: absolute;
-  top: 250px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
 }
 
 .form-group {

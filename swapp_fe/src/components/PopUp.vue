@@ -14,6 +14,14 @@
         <li @click="navegar('/editar-perfil')">Editar Perfil</li>
         <li @click="navegar('/editar-senha')">Editar Senha</li>
         <li @click="navegar('/editar-habilidade')">Editar Habilidade</li>
+        <li @click="toggleSubmenu">
+          Minha atividade
+          <ul v-if="submenuVisible" class="popup-menu submenu">
+            <li @click="navegar('/opcao1')">Matchs</li>
+            <li @click="navegar('/opcao2')">Curtidas Recebidas</li>
+            <li @click="navegar('/opcao3')">Minhas Curtidas</li>
+          </ul>
+        </li>
         <li class="logout" @click="logout">Sair</li>
       </ul>
       </ul>
@@ -24,6 +32,11 @@
 <script>
 export default {
   name: "PopupMenu",
+  data() {
+    return {
+      submenuVisible: false, // Controla a visibilidade do submenu
+    };
+  },
   methods: {
     closePopup() {
       this.$emit("close");
@@ -35,6 +48,9 @@ export default {
     logout() {
       alert("Você saiu!");
       this.closePopup();
+    },
+    toggleSubmenu() {
+      this.submenuVisible = !this.submenuVisible; // Alterna a visibilidade do submenu
     },
   },
 };
@@ -124,8 +140,20 @@ export default {
   background-color: #f0f0f0;
 }
 
+.submenu li {
+  padding: 8px 15px;
+  margin: 5px 0;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.submenu li:hover {
+  background-color: #adadad;
+}
+
 .popup-menu .selected {
-  background-color: #ddd;
+  background-color: #b03535;
   font-weight: bold;
 }
 

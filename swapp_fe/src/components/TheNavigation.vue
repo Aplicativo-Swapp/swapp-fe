@@ -29,6 +29,9 @@
                 <li class="nav-item">
                     <router-link to="/match" class= "nav-link">Match</router-link>
                 </li>
+                <li class="nav-item">
+                    <router-link to="/minha-atividade" class= "nav-link">Minha Atividade</router-link>
+                </li>
             </ul>
         </div>
     </nav>
