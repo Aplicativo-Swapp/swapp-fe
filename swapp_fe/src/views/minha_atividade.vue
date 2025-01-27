@@ -82,6 +82,7 @@ export default {
 </script>
 
 <style scoped>
+
 .main-container {
   display: flex;
   flex-direction: column;
@@ -95,18 +96,20 @@ export default {
 
 /* Estilo da coluna lateral */
 .sidebar {
+  margin-top: 50px;
   width: 200px;
   height: min-content;
   background-color: #e0e0e0; /* Cinza claro */
-  padding: 20px 0;
+  padding:40px 0;
+  border-radius: 0px 8px 8px 0px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .sidebar-button {
-  width: 90%;
-  padding: 10px 5px;
+  width: 100%;
+  padding: 20px 5px;
   background: transparent;
   border: none;
   text-align: left;

@@ -141,7 +141,7 @@ export default {
 
 .submenu li {
   padding: 8px 15px;
-  margin: 5px 0;
+  margin: 5px;
   cursor: pointer;
   border-radius: 5px;
   transition: background-color 0.3s, color 0.3s;
