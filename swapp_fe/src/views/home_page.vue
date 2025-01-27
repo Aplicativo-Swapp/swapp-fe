@@ -96,10 +96,25 @@
           </a>
         </div>
       </div>
-      <div>
-        <img src="@/assets/banner.jpeg" alt="Banner" class="banner" />
-      </div>
     </main>
+
+    <section class="banner">
+      <img src="@/assets/oferecer_serviço.png" alt="Boneco" class="boneco" />
+        <div class="servico-container">
+          <div class="title">
+            <h2>DÊ MATCH DE SERVIÇOS COM ALGUÉM PRÓXIMO DE VOCÊ</h2>
+            <p>
+              Tem algum talento que você não usa?
+            </p>
+            <p>
+              Está precisando de um serviço e não sabe onde encontrar?
+            </p>
+          </div>
+          <a href="/inserir-habilidade">
+            <button class="servico-button">Quero oferecer um serviço</button>
+          </a>
+      </div>
+    </section>
 
     <section class="services-section">
       <h2 class="section-title">Serviços mais Procurados</h2>
@@ -230,9 +245,76 @@ export default {
   height: auto;
 }
 
-.banner{
-  width: 1520px;
-  height: auto;
+.banner {
+  background-color: #D9D9D9; 
+  padding: 40px 20px; 
+  display: flex; /* Ativa o Flexbox */
+  justify-content: space-between; /* Espaço entre a imagem e o botão */
+  /*align-items: center;  Centraliza verticalmente os elementos (imagem e botão) */
+  text-align: center; 
+}
+
+.boneco {
+  max-width: 230px; 
+  margin-left: 40px;
+  margin-right: 150px;
+}
+
+.title {
+  text-align: left;
+  color: black;
+}
+
+.title h2 {
+  font-size: 24px;
+  font-weight: bold;
+  position: relative; /* Necessário para o pseudo-elemento */
+}
+
+.title h2::after {
+  content: ""; 
+  display: block; 
+  width: 200px; 
+  height: 4px; 
+  background-color: #89ffdb; 
+  margin-top: 5px; 
+}
+
+.title p{
+  background-color: white; /* Define a cor de fundo (amarelo claro, neste caso) */
+  padding: 15px; /* Adiciona espaçamento interno para melhorar a aparência */
+  border-radius: 10px; /* Bordas arredondadas (opcional) */
+  font-size: 16px;
+  color: #333; 
+}
+
+.servico-container {
+  display: flex;
+  flex-direction: column; /* Caso precise de múltiplos elementos alinhados */
+  flex: 1; /* Faz o botão ocupar espaço restante da seção */
+  justify-content: flex-start; /* Mantém os outros itens no topo */
+}
+
+.servico-button {
+  margin-top: auto; /* Empurra o botão para a parte inferior do contêiner */
+  background-color: #89FFDB;
+  color: black;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 90px;
+  font-size: 20px;
+  font-weight: lighter;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.servico-button:hover {
+  background-color: #00b089; 
+  transform: scale(1.05); 
+}
+
+.servico-button:active {
+  transform: scale(0.95); 
 }
 
 .search-bar {
