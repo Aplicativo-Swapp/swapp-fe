@@ -203,7 +203,7 @@ export default {
                 }
 
                 const response = await axios.get(
-                    "http://localhost:8000/api/users/detail/",
+                    "http://34.56.213.96:8000/api/users/detail/",
                     {
                         headers: {
                             Authorization: `Bearer ${token}`, // Passa o token no cabeçalho Authorization
@@ -256,7 +256,7 @@ export default {
                 };
 
                 await axios.put(
-                    "http://localhost:8000/api/users/update/",
+                    "http://34.56.213.96:8000/api/users/update/",
                     formDataToSend,
                     {
                         headers: {
@@ -344,7 +344,7 @@ export default {
                     }
 
                     await axios.delete(
-                        "http://localhost:8000/api/users/delete/",
+                        "http://34.56.213.96:8000/api/users/delete/",
                         {
                             headers: {
                                 Authorization: `Bearer ${token}`, // Passa o token no cabeçalho Authorization

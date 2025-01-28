@@ -104,7 +104,7 @@ export default {
                 return;
             }
             // Enviando os dados para o backend
-            axios.put('http://localhost:8000/api/users/change-password/', this.formData, {
+            axios.put('http://34.56.213.96:8000/api/users/change-password/', this.formData, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
