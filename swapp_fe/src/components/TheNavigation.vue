@@ -32,6 +32,9 @@
                 <li class="nav-item">
                     <router-link to="/minha-atividade" class= "nav-link">Minha Atividade</router-link>
                 </li>
+                <li class="nav-item">
+                    <router-link to="/chat" class= "nav-link">Chat</router-link>
+                </li>
             </ul>
         </div>
     </nav>

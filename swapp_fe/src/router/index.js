@@ -10,6 +10,7 @@ import EditarHabilidade from '@/views/editar_habilidades.vue';
 import Match from '@/views/match.vue';
 import MinhaAtividade from '@/views/minha_atividade.vue';
 import home_page_lgd from '@/views/home_page_lgd.vue';
+import ChatPage from '@/views/chat.vue';
 
 
 const routes = [
@@ -25,7 +26,7 @@ const routes = [
   { path: '/editar-senha', component: EditarSenha, name: 'EditarSenha' },
   { path: '/match', component: Match, name: 'Match' },
   { path: '/minha-atividade', component: MinhaAtividade, name: 'MinhaAtividade' },
-
+  { path: '/chat', component: ChatPage, name: 'Chat' },
 ];
 
 const router = createRouter({
