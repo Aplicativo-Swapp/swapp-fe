@@ -1,14 +1,22 @@
 <template>
   <div class="curtidas-recebidas">
     <main class="likes-grid">
-      <div class="like-card" v-for="like in likes" :key="like.id">
-        <h4>{{ like.user }} curtiu seu serviço de {{ like.service.title }}</h4>
-        <p>Localização: {{ like.service.location }}</p>
+      <!-- Exibe mensagem quando não há curtidas -->
+      <div v-if="likes.length === 0">
+        <p>Nenhuma curtida encontrada.</p>
+      </div>
+
+      <!-- Exibe as curtidas -->
+      <div class="like-card" v-else v-for="like in likes" :key="like[0]">
+        <h4>
+          <strong>{{ like[1] }}</strong> curtiu seu serviço!
+        </h4>
+        <p>Localização: {{ like[3] }}</p>
         <div class="user-services">
           <h4>Serviços oferecidos:</h4>
           <ul>
-            <li v-for="service in like.userServices" :key="service.id">
-              {{ service.title }}
+            <li>
+              {{ like[2] }}
             </li>
           </ul>
         </div>
@@ -18,45 +26,26 @@
 </template>
 
 <script>
-//import axios from "axios";
+import axios from "axios";
 
 export default {
   name: "LikesPage",
 
   data() {
     return {
-      likes: [], // Armazena as curtidas e serviços relacionados
-      isLoading: true,
+      likes: [], // Lista de curtidas
+      isLoading: true, // Controle de carregamento
     };
   },
+
   methods: {
     async fetchLikes() {
       try {
-//para testes
-        this.likes = [
-                  {
-                    id: 1,
-                    user: "Neymar Jr",
-                    service: { id: 10, title: "Cortar cabelo", location: "São Paulo" },
-                    userServices: [
-                      { id: 11, title: "Design de barba" },
-                      { id: 12, title: "Tratamento capilar" }
-                    ]
-                  },
-                  {
-                    id: 2,
-                    user: "Lionel Messi",
-                    service: { id: 13, title: "Reparação de celular", location: "Barcelona" },
-                    userServices: [
-                      { id: 14, title: "Instalação de aplicativos" },
-                      { id: 15, title: "Configuração de redes" }
-                    ]
-                  }
-                ];
-
-//para a API
-        /*const response = await axios.get("http://localhost:3000/likes"); // Substituir pela URL correta da API
-        this.likes = response.data;*/
+        const userId = 2; // Substitua pelo ID real do usuário logado
+        const response = await axios.get(
+          `https://rust-swapp-be-407691885788.us-central1.run.app/match/buscar_likes/${userId}`
+        );
+        this.likes = response.data; // Atualiza os dados da API
       } catch (error) {
         console.error("Erro ao buscar curtidas:", error);
       } finally {
@@ -64,11 +53,14 @@ export default {
       }
     },
   },
+
   mounted() {
     this.fetchLikes(); // Busca os dados ao carregar a página
   },
 };
 </script>
+
+
 
 <style scoped>
 .curtidas-recebidas {
@@ -93,8 +85,8 @@ export default {
 }
 
 .like-card:hover {
-    transform: scale(1.05); /* Aplica o zoom */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adiciona uma sombra para destaque */
+  transform: scale(1.05); /* Aplica o zoom */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adiciona uma sombra para destaque */
 }
 
 .user-services {
