@@ -9,11 +9,12 @@ import EditarSenha from '@/views/editar_senha.vue';
 import EditarHabilidade from '@/views/editar_habilidades.vue';
 import Match from '@/views/match.vue';
 import MinhaAtividade from '@/views/minha_atividade.vue';
-
+import home_page_lgd from '@/views/home_page_lgd.vue';
 
 
 const routes = [
   { path: '/', component: HomePage, name: 'home' },
+  { path: '/home', component: home_page_lgd, name: 'HomeLogada' },
   { path: '/login', component: LoginPage, name: 'login' },
   { path: '/cadastro', component: CadastroUsuario, name: 'CadastroUsuario'},
   { path: '/inserir-habilidade', component: InserirHabilidade, name: 'InserirHabilidade'},

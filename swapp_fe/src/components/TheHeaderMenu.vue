@@ -14,7 +14,7 @@
 
     <!-- Saudação e ícone (direita) -->
     <div class="user-section">
-      <span>Olá, {{ usuarioNome }}</span>
+      <span>Olá, {{ first_name }}</span>
       <div class="notification-section">
         <button @click="toggleNotifications" class="notification-button">
           <img src="@/assets/notificacao.png" alt="Notificação" class="notification-icon" />
@@ -64,7 +64,7 @@ methods: {
   },
   async buscarUsuarioLogado() {
     try {
-      const response = await fetch('/api/usuario-logado'); // Altere para o endpoint correto
+      const response = await fetch('http://34.56.213.96:8000/api/users/detail'); // Altere para o endpoint correto
       const data = await response.json();
       this.usuarioNome = data.nome; // Salva o nome do usuário
     } catch (error) {
@@ -133,6 +133,7 @@ width: 150px;
 margin-top: 10px;
 margin-bottom: 10px;
 height: auto;
+cursor: pointer;
 }
 
 /* Seção de usuário (direita) */

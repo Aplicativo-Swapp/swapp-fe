@@ -1,43 +1,6 @@
 <template>
   <div>
-    <header class="header">
-      <div class="header-content">
-        <img src="@/assets/logo2.png" alt="Logo" class="logo" />
-        <div class="search-bar">
-          <input
-            type="text"
-            v-model="searchQuery"
-            placeholder="Pesquise por categorias, localização..."
-          />
-          <button @click="search">buscar</button>
-        </div>
-        <div class="itens">
-          <div class="dropdown">
-            <button class="dropbtn">Categorias <span class="arrow">&#9660;</span></button>
-            <div class="dropdown-content">
-              <a href="#">Assistência Técnica</a>
-              <a href="#">Aulas</a>
-              <a href="#">Consultoria</a>
-              <a href="#">Design e Tecnologia</a>
-              <a href="#">Eventos</a>
-              <a href="#">Moda e Beleza</a>
-              <a href="#">Reformas e Reparos</a>
-              <a href="#">Saúde</a>
-              <a href="#">Serviços Domésticos</a>
-            </div>
-          </div>
-          <ul class="utility-list">
-            <li class="nav-item">
-              <a href="/">Contato</a>
-            </li>
-            <img src="@/assets/entrar_homepage.jpeg" alt="Entrar" class="entrar" />
-            <li class="nav-item">
-              <router-link to="/login">Entrar</router-link>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </header>
+    <TheHeaderHome />
 
     <main class="main">
       <div class="categories">
@@ -184,11 +147,13 @@
 
 <script>
 import TheFooter from "@/components/TheFooter.vue";
+import TheHeaderHome from "@/components/TheHeaderHome.vue";
 
 export default {
   name: "HomePage",
   components: {
-    TheFooter // Registra o componente TheFooter
+    TheFooter,
+    TheHeaderHome
   },
   data() {
     return {
@@ -206,8 +171,6 @@ export default {
   },
 };
 </script>
-
-
 
 <style scoped>
 

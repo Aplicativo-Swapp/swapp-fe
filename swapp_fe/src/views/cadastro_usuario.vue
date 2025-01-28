@@ -92,7 +92,7 @@ export default {
       }
 
       try {
-        const response = await axios.post('http://0.0.0.0:8000/api/users/register/', {
+        const response = await axios.post('http://34.56.213.96:8000/api/users/register/', {
           first_name: this.formData.name,
           last_name: this.formData.surname,
           email: this.formData.email,

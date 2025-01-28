@@ -55,7 +55,7 @@ export default {
         }
 
         try {
-          const response = await axios.post("http://localhost:8000/api/users/login/", {
+          const response = await axios.post("http://34.56.213.96:8000/api/users/login/", {
               email: this.formData.email,
               password: this.formData.password,
           });
@@ -68,7 +68,7 @@ export default {
             localStorage.setItem("refreshToken", refresh);
           
             alert(message || "Login realizado com sucesso!");
-            this.$router.push({ name: "home" }); // Redireciona para a página principal
+            this.$router.push({ name: "HomeLogada" }); // Redireciona para a página principal
           } else {  
             alert("Falha ao obter token de autenticação.");
           }          
