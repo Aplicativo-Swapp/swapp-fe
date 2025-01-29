@@ -1,16 +1,31 @@
 <template>
     <div class="popup-overlay" @click.self="closePopup">
         <div class="popup-content">
+
+            <!-- Card para Match -->
             <div v-if="service">
-                <img :src="service.image" alt="Imagem do serviço" class="service-image" />
-                <div class="service-info">
-                    <h2>{{ service.title }}</h2>
-                    <div class="texto">
-                        <p>Localização: {{ service.location }}</p>
-                        <p>{{ service.description }}</p>
+                <div v-if="actionType === 'close'">
+                    <img :src="service.image" alt="Imagem do serviço" class="service-image" />
+                    <div class="service-info">
+                        <h2>{{ service.title }}</h2>
+                        <div class="texto">
+                            <p>Localização: {{ service.location }}</p>
+                            <p>{{ service.description }}</p>
+                        </div>
                     </div>
+                    <button class="btn-close" @click="closePopup">Fechar</button>
                 </div>
-                <button class="btn-close" @click="closePopup">Fechar</button>
+
+                <!-- Card para Minhas curtidas -->
+                <div v-if="actionType === 'remove'">
+                    <img :src="service.image" alt="Imagem do serviço" class="service-image" />
+                    <div class="service-info">
+                        <h4>Você curtiu o serviço de {{ service.full_name }}</h4>
+                        <h2>{{ service.title }}</h2>
+                        <h4>Localização: {{ service.location }}</h4>
+                    </div>
+                    <button class="btn-remove" @click="removeLike">Remover Curtida</button>
+                </div>
             </div>
             <div v-else>
                 <p>Serviço não encontrado.</p>
@@ -22,10 +37,22 @@
 <script>
 export default {
     name: "CardPage",
-    props: ["service"],
+    props: {
+        service: {
+            type: Object,
+            required: true,
+        },
+        actionType: {
+            type: String,
+            default: "close",
+        },
+    },
     methods: {
         closePopup() {
             this.$emit("close");
+        },
+        removeLike() {
+            this.$emit("remove", this.service.id);
         },
     },
 };
@@ -62,10 +89,11 @@ export default {
     margin-bottom: 10px;
 }
 
-.service-info{
+.service-info {
     text-align: left;
 }
-.texto{
+
+.texto {
     font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -81,5 +109,33 @@ export default {
 
 .btn-close:hover {
     background: #555;
+}
+
+.btn-close {
+    margin-top: 10px;
+    padding: 10px 20px;
+    border: none;
+    background: #333;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-close:hover {
+    background: #555;
+}
+
+.btn-remove {
+    margin-top: 10px;
+    padding: 10px 20px;
+    border: none;
+    background: #e53935;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-remove:hover {
+    background: #c62828;
 }
 </style>

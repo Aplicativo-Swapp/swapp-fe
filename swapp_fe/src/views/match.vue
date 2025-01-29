@@ -50,7 +50,7 @@
             </main>
         </div>
         <!-- Popup -->
-        <CardPage v-if="isPopupOpen" :service="selectedService" @close="closePopup" />
+        <CardPage v-if="isPopupOpen" :service="selectedService" actionType="close" @close="closePopup" />
 
         <!-- Footer -->
         <TheFooter />
