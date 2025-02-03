@@ -20,6 +20,11 @@
             </li>
           </ul>
         </div>
+
+        <!-- 🔹 Botão para criar match -->
+        <button @click="createMatch(like)" class="btn-match">
+          Dar Match 🤝
+        </button>
       </div>
     </main>
   </div>
@@ -35,21 +40,40 @@ export default {
     return {
       likes: [], // Lista de curtidas
       isLoading: true, // Controle de carregamento
+      userId: 2, // ID do usuário logado (temporário, depois será variável global)
     };
   },
 
   methods: {
     async fetchLikes() {
       try {
-        const userId = 2; // Substitua pelo ID real do usuário logado
         const response = await axios.get(
-          `https://rust-swapp-be-407691885788.us-central1.run.app/match/buscar_likes/${userId}`
+          `https://rust-swapp-be-407691885788.us-central1.run.app/match/buscar_likes/2`
         );
         this.likes = response.data; // Atualiza os dados da API
       } catch (error) {
         console.error("Erro ao buscar curtidas:", error);
       } finally {
         this.isLoading = false;
+      }
+    },
+
+    async createMatch(like) {
+      try {
+        const payload = {
+          id_deu_like: like[0], // Quem deu o like
+          id_liked: this.userId, // Quem recebeu o like (usuário logado)
+        };
+
+        await axios.post(
+          "https://rust-swapp-be-407691885788.us-central1.run.app/match/add_match",
+          payload
+        );
+
+        alert("Match criado com sucesso! 🎉");
+      } catch (error) {
+        console.error("Erro ao criar match:", error);
+        alert("Erro ao criar match.");
       }
     },
   },
@@ -59,8 +83,6 @@ export default {
   },
 };
 </script>
-
-
 
 <style scoped>
 .curtidas-recebidas {
@@ -78,15 +100,15 @@ export default {
 .like-card {
   border: 0.5px solid #ccc;
   border-radius: 15px;
-  padding: 15px 20px 15px 20px;
+  padding: 15px 20px;
   width: 300px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Suaviza o efeito */
-  text-align: left; /* Alinha o texto à esquerda */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: left;
 }
 
 .like-card:hover {
-  transform: scale(1.05); /* Aplica o zoom */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adiciona uma sombra para destaque */
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .user-services {
@@ -103,5 +125,24 @@ export default {
   margin-bottom: 5px;
   padding: 5px 10px;
   border-radius: 4px;
+}
+
+/* 🔹 Estilização do botão de match */
+.btn-match {
+  background-color: #00c896;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+  transition: background 0.3s ease;
+}
+
+.btn-match:hover {
+  background-color: #008f6b;
 }
 </style>
