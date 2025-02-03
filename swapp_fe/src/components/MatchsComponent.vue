@@ -17,7 +17,7 @@
         <hr class="divider" />
         <div class="match-body">
           <p><strong>Você Curtiu:</strong></p>
-          <p>{{ match.yourSkill }}</p> <!-- Corrigido: Exibe a habilidade do usuário logado -->
+          <p>{{ match.yourSkill }}</p> <!-- Exibe a habilidade do usuário logado -->
         </div>
         <hr class="divider" />
         <div class="match-actions">
@@ -30,7 +30,7 @@
           </div>
           <!-- Botão de Dislike -->
           <div class="action-button">
-            <button @click="dislikeAction(match.id)" class="btn-dislike">
+            <button @click="dislikeAction(match.id, match.them_id)" class="btn-dislike">
               <img src="@/assets/nao.png" alt="Dislike" class="action-icon" />
             </button>
             <p class="remove-text">Retirar Curtida</p>
@@ -45,126 +45,158 @@
 import axios from "axios";
 
 export default {
-name: "MatchsComponent",
-data() {
-  return {
-    userId: 3, // Simulação de usuário logado, substituir pela variável global depois
-    matches: [],
-  };
-},
-methods: {
-  async fetchMatches() {
-    try {
-      const response = await axios.get(`https://rust-swapp-be-407691885788.us-central1.run.app/match/all/${this.userId}`);
-      this.matches = response.data.map(match => ({
-        id: match[0], // ID do match
-        them: match[1], // Nome da pessoa que curtiu você
-        theirSkill: match[2], // Habilidade que essa pessoa oferece
-        yourSkill: match[5], // Agora busca a habilidade correta do usuário logado
-        userImage: "https://via.placeholder.com/50",
-      }));
-    } catch (error) {
-      console.error("Erro ao buscar matches:", error);
-    }
+  name: "MatchsComponent",
+  data() {
+    return {
+      userId: 3, // Simulação do usuário logado, substituir depois pela variável global
+      matches: [],
+    };
   },
-  openChat(id) {
-    console.log(`Abrindo chat para o match com ID: ${id}`);
+  methods: {
+    async fetchMatches() {
+      try {
+        const response = await axios.get(
+          `https://rust-swapp-be-407691885788.us-central1.run.app/match/all/${this.userId}`
+        );
+        this.matches = response.data.map(match => ({
+          id: match[0], // ID do match
+          them: match[1], // Nome da pessoa que curtiu você
+          theirSkill: match[2], // Habilidade que essa pessoa oferece
+          yourSkill: match[5], // Sua habilidade que foi curtida
+          them_id: match[3], // ID da pessoa que curtiu
+          userImage: "https://via.placeholder.com/50", // Imagem temporária
+        }));
+      } catch (error) {
+        console.error("Erro ao buscar matches:", error);
+      }
+    },
+    async dislikeAction(matchId, likedUserId) {
+      try {
+        const payload = {
+          id_deu_like: this.userId, // Usuário logado
+          id_liked: likedUserId,  // Usuário que foi curtido
+        };
+
+        await axios.delete("https://rust-swapp-be-407691885788.us-central1.run.app/match/remove", {
+          data: payload,
+        });
+
+        // Atualiza a lista removendo o match
+        this.matches = this.matches.filter(match => match.id !== matchId);
+
+        console.log(`Match ${matchId} removido com sucesso!`);
+      } catch (error) {
+        console.error("Erro ao remover match:", error);
+      }
+    },
+    openChat(id) {
+      console.log(`Abrindo chat para o match com ID: ${id}`);
+    },
   },
-  dislikeAction(id) {
-    console.log(`Dislike no match com ID: ${id}`);
+  mounted() {
+    this.fetchMatches();
   },
-},
-mounted() {
-  this.fetchMatches();
-},
 };
 </script>
 
 <style scoped>
 .matchs {
-text-align: center;
-padding: 20px;
+  text-align: center;
+  padding: 20px;
 }
+
 .no-matches {
-text-align: center;
-color: #555;
+  text-align: center;
+  color: #555;
 }
+
 .matches-list {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-gap: 1.5rem;
-margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 20px;
 }
+
 .match-card {
-border: 1px solid #ddd;
-padding: 1.5rem;
-border-radius: 8px;
-background-color: #f9f9f9;
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-display: flex;
-flex-direction: column;
-justify-content: space-between;
-min-height: 300px;
+  border: 1px solid #ddd;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 300px;
 }
+
 .match-header {
-display: flex;
-flex-direction: column;
-gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
+
 .user-info {
-display: flex;
-align-items: center;
-gap: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
+
 .user-photo {
-width: 40px;
-height: 40px;
-border-radius: 50%;
-object-fit: cover;
-border: 2px solid #ddd;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
 }
+
 .match-header p,
 .match-body p {
-margin: 0.5rem 0;
-font-size: 1rem;
+  margin: 0.5rem 0;
+  font-size: 1rem;
 }
+
 .divider {
-margin: 1rem 0;
-border: none;
-border-top: 1px solid #ddd;
+  margin: 1rem 0;
+  border: none;
+  border-top: 1px solid #ddd;
 }
+
 .match-actions {
-display: flex;
-justify-content: space-evenly;
-align-items: center;
-gap: 1.5rem;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 1.5rem;
 }
+
 .action-button {
-display: flex;
-flex-direction: column;
-align-items: center;
-text-align: center;
-width: 120px; /* Largura uniforme para alinhar os textos */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 120px;
 }
+
 .btn-chat,
 .btn-dislike {
-background-color: transparent;
-border: none;
-cursor: pointer;
-padding: 0;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
 }
+
 .btn-chat .chat-icon,
 .btn-dislike .action-icon {
-width: 70px; /* Tamanho uniforme para ambos os botões */
-height: 70px;
-object-fit: contain;
-pointer-events: none;
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  pointer-events: none;
 }
+
 .chat-text,
 .remove-text {
-margin-top: 10px; /* Espaçamento uniforme entre botão e texto */
-font-size: 0.9rem;
-color: #555;
-text-align: center; /* Centraliza o texto */
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #555;
+  text-align: center;
 }
 </style>
