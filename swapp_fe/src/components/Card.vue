@@ -52,9 +52,10 @@ export default {
             this.$emit("close");
         },
         removeLike() {
-            this.$emit("remove", this.service.id);
-        },
-    },
+            this.$emit("remove", this.service.id_liked);
+        }
+    }
+
 };
 </script>
 

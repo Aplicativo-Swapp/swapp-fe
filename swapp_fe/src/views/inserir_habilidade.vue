@@ -5,42 +5,45 @@
       <div class="form-container">
         <h2>Anuncie uma Habilidade</h2>
         <form @submit.prevent="submitForm">
-  
+
           <!-- Select de Categorias -->
           <div class="select">
-            <select v-model="formData.category" @change="updateSubcategories" required class="select-category">
-              <option value="" disabled selected hidden>Categoria do serviço</option>
-              <option v-for="category in categories" :key="category.id" :value="category.name">
-                {{ category.name }}
+            <select v-model="formData.category" @change="fetchSubHabilidades" required class="select-category">
+              <option value="" disabled selected hidden>Categorias</option>
+              <option v-for="category in categories" :key="category.id" :value="category.id">
+                {{ category.nome }}
               </option>
             </select>
           </div>
-  
+
           <!-- Select de Subcategorias -->
           <div class="select">
             <select v-model="formData.subcategory" required class="select-category">
               <option value="" disabled selected hidden>Subcategoria</option>
-              <option v-for="subcategory in subcategories" :key="subcategory.id" :value="subcategory.name">
-                {{ subcategory.name }}
+              <option v-for="subcategory in subcategories" :key="subcategory.id" :value="subcategory.id">
+                {{ subcategory.nome }}
               </option>
             </select>
           </div>
-  
-          <!-- Input de Valor, Localização, Título e Descrição -->
-          
+
+          <!-- Restante do formulário -->
           <div class="form-group">
             <input type="text" v-model="formData.value" placeholder="Valor Estimado (R$)" @input="formatCurrency" class="text-box" />
+
+
           </div>
           <div class="form-group">
             <input type="text" v-model="formData.localization" placeholder="Localização" required class="text-box" />
           </div>
           <div class="form-group">
-            <input type="text" v-model="formData.title" placeholder="Título. Ex: corte de cabelo" required class="text-box" />
+            <input type="text" v-model="formData.title" placeholder="Título. Ex: corte de cabelo" required
+              class="text-box" />
           </div>
           <div class="form-group">
-            <textarea type="text" v-model="formData.description" placeholder="Descrição" required class="description-box"></textarea>
+            <textarea type="text" v-model="formData.description" placeholder="Descrição" required
+              class="description-box"></textarea>
           </div>
-          
+
           <div class="form-group">
             <!-- Botão de upload com miniaturas -->
             <label for="photo-upload" class="upload-button">
@@ -50,7 +53,8 @@
                 </template>
                 <template v-else>
                   <template v-for="(photo, index) in formData.photos.slice(0, 3)">
-                    <img v-if="index < 2 || formData.photos.length <= 3" :key="'photo-' + index" :src="getPhotoPreview(photo)" alt="Pré-visualização" class="thumbnail"/>
+                    <img v-if="index < 2 || formData.photos.length <= 3" :key="'photo-' + index"
+                      :src="getPhotoPreview(photo)" alt="Pré-visualização" class="thumbnail" />
                     <div v-else :key="'indicator-' + index" class="more-indicator">
                       +{{ formData.photos.length - 2 }}
                     </div>
@@ -58,13 +62,14 @@
                 </template>
               </div>
             </label>
-            <input id="photo-upload" type="file" @change="handleFileUpload" accept="image/*" multiple class="photo-input" />
+            <input id="photo-upload" type="file" @change="handleFileUpload" accept="image/*" multiple
+              class="photo-input" />
           </div>
-          
+
           <button type="submit">Anunciar</button>
         </form>
       </div>
-      
+
       <div class="illustration">
         <nav>
           <div class="text-illustration">
@@ -98,25 +103,45 @@ export default {
         localization: "",
         title: "",
         description: "",
-        value: "", // Valor estimado no formato moeda
-        photos: [], // Armazenará os arquivos de imagem
+        valor: "", // Valor estimado no formato moeda
+        photos: [], // Armazenará os arquivos de imagem, mas não serão enviadas
       },
-      categories: [
-        { id: 1, name: "Assistência Técnica", subcategories: ["Computadores", "Eletrodomésticos"] },
-        { id: 2, name: "Aulas", subcategories: ["Matemática", "Idiomas", "Música"] },
-        { id: 3, name: "Serviços Domésticos", subcategories: ["Limpeza", "Cozinha", "Manutenção"] },
-      ],
+      categories: [],
       subcategories: [],
     };
   },
   methods: {
-    updateSubcategories() {
-      const selectedCategory = this.categories.find(
-        (category) => category.name === this.formData.category);
-      this.subcategories = selectedCategory
-        ? selectedCategory.subcategories.map((name, index) => ({ id: index, name }))
-        : [];
-      this.formData.subcategory = ""; // Reseta o valor da subcategoria
+    async fetchHabilidades() {
+      try {
+        const response = await axios.get("https://rust-swapp-be-407691885788.us-central1.run.app/habilidades");
+        console.log("Habilidades recebidas:", response.data);
+        this.categories = response.data;
+      } catch (error) {
+        console.error("Erro ao buscar habilidades:", error);
+      }
+    },
+    async fetchSubHabilidades() {
+      this.formData.subcategory = ""; // Reseta a subcategoria ao mudar a categoria
+      this.subcategories = []; // Limpa as subcategorias antes de buscar novas
+
+      // Verifica se o ID da categoria foi selecionado
+      console.log("ID da categoria selecionada:", this.formData.category);
+
+      if (!this.formData.category) return;
+
+      try {
+        const response = await axios.get(`https://rust-swapp-be-407691885788.us-central1.run.app/sub_habilidade_habilidade/${this.formData.category}`);
+        console.log("Resposta da API para subcategorias:", response.data);
+
+        // Verifique se a resposta contém uma lista de subcategorias
+        if (Array.isArray(response.data)) {
+          this.subcategories = response.data; // Atualiza subcategorias com a resposta correta
+        } else {
+          console.error("Formato inesperado para subcategorias:", response.data);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar sub habilidades:", error);
+      }
     },
     handleFileUpload(event) {
       const files = event.target.files;
@@ -126,39 +151,34 @@ export default {
     getPhotoPreview(file) {
       return URL.createObjectURL(file); // Cria uma URL local para pré-visualizar as imagens
     },
-    formatCurrency(event) {
-      // Remove caracteres que não são números
-      let value = event.target.value.replace(/\D/g, "");
 
-      // Converte para formato de moeda brasileiro
-      value = (value / 100).toLocaleString("pt-BR", {
+    formatCurrency(event) {
+      let value = event.target.value.replace(/\D/g, ""); // Remove tudo que não for número
+      let floatValue = parseFloat(value) / 100; // Converte para decimal
+
+      // Atualiza o modelo de dados com um número puro (sem formatação)
+      this.formData.value = floatValue;
+
+      // Exibe o valor formatado no input
+      event.target.value = floatValue.toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL",
       });
-
-      // Atualiza o modelo de dados
-      this.formData.value = value;
     },
-    async submitForm() {
-      const formData = new FormData();
-      formData.append("category", this.formData.category);
-      formData.append("subcategory", this.formData.subcategory);
-      formData.append("localization", this.formData.localization);
-      formData.append("title", this.formData.title);
-      formData.append("description", this.formData.description);
-      formData.append("value", this.formData.value);
 
-      // Adiciona as imagens ao FormData
-      this.formData.photos.forEach((file, index) => {
-        formData.append(`photo_${index}`, file);
-      });
+    async submitForm() {
+      const postData = {
+        descricao: this.formData.description,
+        id_sub_habilidade: this.formData.subcategory,
+        id_users: 3, // Substitua com o ID do usuário autenticado
+        valor: parseFloat(this.formData.value), // Garante que seja um número
+      };
 
       try {
-        const response = await axios.post("http://34.56.213.96:8000/api/users/register/", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const response = await axios.post(
+          "https://rust-swapp-be-407691885788.us-central1.run.app/inserir",
+          postData
+        );
         alert("Habilidade anunciada com sucesso!");
         console.log("Resposta da API:", response.data);
       } catch (error) {
@@ -166,6 +186,9 @@ export default {
         alert("Erro ao realizar o cadastro de habilidade. Verifique os dados e tente novamente.");
       }
     },
+  },
+  mounted() {
+    this.fetchHabilidades();
   },
 };
 </script>
@@ -175,13 +198,13 @@ body {
   background-color: #ececec;
   margin: 0;
   font-family: Arial, sans-serif;
-  min-height: 100vh; 
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
 #app {
-  flex: 1; 
+  flex: 1;
 }
 
 .logo {
@@ -191,7 +214,8 @@ body {
 
 .form-illustration-container {
   display: flex;
-  flex-direction: row-reverse; /* Inverte a ordem dos elementos */
+  flex-direction: row-reverse;
+  /* Inverte a ordem dos elementos */
 }
 
 .form-container {
@@ -216,9 +240,12 @@ body {
   background-color: #d9d9d9;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  display: flex; /* Adiciona o Flexbox */
-  justify-content: center; /* Centraliza horizontalmente */
-  align-items: center; /* Centraliza verticalmente */
+  display: flex;
+  /* Adiciona o Flexbox */
+  justify-content: center;
+  /* Centraliza horizontalmente */
+  align-items: center;
+  /* Centraliza verticalmente */
 }
 
 .text-illustration {
@@ -229,7 +256,8 @@ body {
 .mascote {
   width: 420px;
   height: auto;
-  display: block; /* Garantir que a imagem não tenha comportamento flex */
+  display: block;
+  /* Garantir que a imagem não tenha comportamento flex */
 }
 
 .select-category {
@@ -259,7 +287,8 @@ body {
   background-color: #d9d9d9;
   font-size: 13px;
   font-family: Arial, sans-serif;
-  resize: none; /* Desabilita o redimensionamento */
+  resize: none;
+  /* Desabilita o redimensionamento */
 }
 
 .upload-button {
@@ -284,10 +313,12 @@ body {
 
 .thumbnail-container {
   display: flex;
-  gap: 5px; /* Espaçamento entre as miniaturas */
+  gap: 5px;
+  /* Espaçamento entre as miniaturas */
   align-items: center;
   justify-content: center;
-  width: 100%; /* Alinha com o botão */
+  width: 100%;
+  /* Alinha com o botão */
 }
 
 .placeholder-text {
@@ -298,7 +329,8 @@ body {
 .thumbnail {
   width: 60px;
   height: 60px;
-  object-fit: cover; /* Garante que a imagem preencha o quadrado */
+  object-fit: cover;
+  /* Garante que a imagem preencha o quadrado */
   border-radius: 4px;
   border: 1px solid #ccc;
 }
@@ -318,7 +350,8 @@ body {
 }
 
 .photo-input {
-  display: none; /* Esconde o input de arquivo */
+  display: none;
+  /* Esconde o input de arquivo */
 }
 
 .text-box {
@@ -343,5 +376,4 @@ button {
 button:hover {
   background-color: #89FFDB;
 }
-
 </style>

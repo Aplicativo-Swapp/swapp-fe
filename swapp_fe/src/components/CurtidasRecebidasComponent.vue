@@ -40,7 +40,7 @@ export default {
     return {
       likes: [], // Lista de curtidas
       isLoading: true, // Controle de carregamento
-      userId: 2, // ID do usuário logado (temporário, depois será variável global)
+      userId: 3, // ID do usuário logado (temporário, depois será variável global)
     };
   },
 
@@ -64,6 +64,8 @@ export default {
           id_deu_like: this.userId, // Quem deu o like
           id_liked: like[0], // Quem recebeu o like (usuário logado)
         };
+
+        console.log("Payload:", payload);
 
         await axios.put(
           "https://rust-swapp-be-407691885788.us-central1.run.app/match",
