@@ -15,7 +15,7 @@
     <!-- Saudação e ícone (direita) -->
     <div class="user-section">
       <span>Olá, {{ first_name }}</span>
-      <div class="notification-section">
+      <!--<div class="notification-section">
         <button @click="toggleNotifications" class="notification-button">
           <img src="@/assets/notificacao.png" alt="Notificação" class="notification-icon" />
           <span v-if="notifications.length > 0" class="notification-count">
@@ -30,7 +30,7 @@
             </li>
           </ul>
         </div>
-      </div>
+      </div>-->
       <img src="@/assets/avatar.png" alt="Avatar" class="avatar" @click="irParaEditarUsuario" />
     </div>
 

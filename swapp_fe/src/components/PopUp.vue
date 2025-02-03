@@ -13,7 +13,8 @@
         <li @click="navegar('/editar-perfil')">Editar Perfil</li>
         <li @click="navegar('/editar-senha')">Editar Senha</li>
         <li @click="navegar('/editar-habilidade')">Editar Habilidade</li>
-        <li @click="toggleSubmenu">
+        
+        <li @click="toggleSubmenu" class="submenu-trigger">
           Minha Atividade
           <ul v-if="submenuVisible" class="popup-menu submenu">
             <li @click="navegar('/minha-atividade', 'matchs')">Matchs</li>
@@ -21,6 +22,7 @@
             <li @click="navegar('/minha-atividade', 'minhasCurtidas')">Minhas Curtidas</li>
           </ul>
         </li>
+
         <li class="logout" @click="logout">Sair</li>
       </ul>
     </div>
@@ -138,6 +140,7 @@ export default {
 .popup-menu li:hover {
   background-color: #f0f0f0;
 }
+
 
 .submenu li {
   padding: 8px 15px;
