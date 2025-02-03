@@ -74,6 +74,7 @@ methods: {
     console.log(`Dislike no match com ID: ${id}`);
   },
 },
+
 mounted() {
   this.fetchMatches();
 },

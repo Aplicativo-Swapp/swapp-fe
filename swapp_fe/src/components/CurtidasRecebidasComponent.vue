@@ -40,7 +40,7 @@ export default {
     return {
       likes: [], // Lista de curtidas
       isLoading: true, // Controle de carregamento
-      userId: 2, // ID do usuário logado (temporário, depois será variável global)
+      userId: 3, // ID do usuário logado (temporário, depois será variável global)
     };
   },
 
@@ -48,7 +48,7 @@ export default {
     async fetchLikes() {
       try {
         const response = await axios.get(
-          `https://rust-swapp-be-407691885788.us-central1.run.app/match/buscar_likes/2`
+          `https://rust-swapp-be-407691885788.us-central1.run.app/match/buscar_likes/3`
         );
         this.likes = response.data; // Atualiza os dados da API
       } catch (error) {
@@ -61,12 +61,14 @@ export default {
     async createMatch(like) {
       try {
         const payload = {
-          id_deu_like: like[0], // Quem deu o like
-          id_liked: this.userId, // Quem recebeu o like (usuário logado)
+          id_deu_like: this.userId, // Quem deu o like
+          id_liked: like[0], // Quem recebeu o like (usuário logado)
         };
 
-        await axios.post(
-          "https://rust-swapp-be-407691885788.us-central1.run.app/match/add_match",
+        console.log("Payload:", payload);
+
+        await axios.put(
+          "https://rust-swapp-be-407691885788.us-central1.run.app/match",
           payload
         );
 
