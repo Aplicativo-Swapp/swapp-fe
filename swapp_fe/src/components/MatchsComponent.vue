@@ -77,7 +77,7 @@ export default {
           id_liked: likedUserId,  // Usuário que foi curtido
         };
 
-        await axios.delete("https://rust-swapp-be-407691885788.us-central1.run.app/match/remove", {
+        await axios.delete("https://rust-swapp-be-407691885788.us-central1.run.app/match/delete", {
           data: payload,
         });
 
