@@ -6,26 +6,28 @@
       <form @submit.prevent="submitForm">
 
         <!-- Select de Categorias -->
-         <div class="form-group">
-           <div class="select-category">
-             <select v-model="formData.category" @change="updateSubcategories" :disabled="!editableFields.category" required>
-               <option value="" disabled hidden>Categoria do serviço</option>
-               <option v-for="category in categories" :key="category.id" :value="category.name">
-                 {{ category.name }}
-               </option>
-             </select>
-             <button type="button" class="edit-button" :data-field="'category'" @click="enableEdit('category')">
-               Editar
-             </button>
-           </div>
-         </div>
+        <div class="form-group">
+          <div class="select-category">
+            <select v-model="formData.categoryId" @change="fetchSubHabilidades" :disabled="!editableFields.category"
+              required>
+              <option value="" disabled hidden>Categoria do serviço</option>
+              <option v-for="category in categories" :key="category.id" :value="category.id">
+                {{ category.nome }}
+              </option>
+            </select>
+            <button type="button" class="edit-button" :data-field="'category'" @click="enableEdit('category')">
+              Editar
+            </button>
+          </div>
+        </div>
+
         <!-- Select de Subcategorias -->
         <div class="form-group">
           <div class="select-category">
-            <select v-model="formData.subcategory" :disabled="!editableFields.subcategory" required>
+            <select v-model="formData.subcategoryId" :disabled="!editableFields.subcategory" required>
               <option value="" disabled hidden>Subcategoria</option>
-              <option v-for="subcategory in subcategories" :key="subcategory.id" :value="subcategory.name">
-                {{ subcategory.name }}
+              <option v-for="subcategory in subcategories" :key="subcategory.id" :value="subcategory.id">
+                {{ subcategory.nome }}
               </option>
             </select>
             <button type="button" class="edit-button" :data-field="'subcategory'" @click="enableEdit('subcategory')">
@@ -33,7 +35,8 @@
             </button>
           </div>
         </div>
-        <!-- Campode  Valor -->
+
+        <!-- Campo de Valor -->
         <div class="form-group">
           <div class="text-box">
             <input type="text" v-model="formData.value" :disabled="!editableFields.value"
@@ -43,6 +46,7 @@
             </button>
           </div>
         </div>
+
         <!-- Campo de Localização -->
         <div class="form-group">
           <div class="text-box">
@@ -53,6 +57,7 @@
             </button>
           </div>
         </div>
+
         <!-- Campo de Título -->
         <div class="form-group">
           <div class="text-box">
@@ -63,6 +68,7 @@
             </button>
           </div>
         </div>
+
         <!-- Campo de Descrição -->
         <div class="form-group">
           <div class="text-box description-box-container">
@@ -73,6 +79,7 @@
             </button>
           </div>
         </div>
+
         <!-- Campo de Fotos -->
         <div class="form-group">
           <label for="photo-upload" class="upload-button">
@@ -83,7 +90,7 @@
               <template v-else>
                 <div class="photo-grid">
                   <template v-for="(photo, index) in formData.photos" :key="'photo-' + index">
-                    <div class="thumbnail-wrapper" >
+                    <div class="thumbnail-wrapper">
                       <img :src="getPhotoPreview(photo)" alt="Thumbnail" />
                       <button class="delete-button" type="button" @click="removePhoto(index)">X</button>
                     </div>
@@ -117,8 +124,8 @@ export default {
   data() {
     return {
       formData: {
-        category: "",
-        subcategory: "",
+        categoryId: "",
+        subcategoryId: "",
         localization: "",
         title: "",
         description: "",
@@ -133,122 +140,129 @@ export default {
         description: false,
         value: false,
       },
-      showAllPhotos: true,
-      categories: [
-        {
-          id: 1,
-          name: "Assistência Técnica",
-          subcategories: ["Computadores", "Eletrodomésticos"],
-        },
-        {
-          id: 2,
-          name: "Aulas",
-          subcategories: ["Matemática", "Idiomas", "Música"],
-        },
-        {
-          id: 3,
-          name: "Serviços Domésticos",
-          subcategories: ["Limpeza", "Cozinha", "Manutenção"],
-        },
-      ],
+      categories: [],
       subcategories: [],
     };
   },
   methods: {
+    // Carrega as categorias disponíveis
+    async fetchHabilidades() {
+      try {
+        const response = await axios.get("https://rust-swapp-be-407691885788.us-central1.run.app/habilidades");
+        this.categories = response.data;
+      } catch (error) {
+        console.error("Erro ao buscar categorias:", error);
+      }
+    },
+
+    async fetchSubHabilidades() {
+      this.formData.subcategoryId = ""; // Reseta a subcategoria ao mudar a categoria
+      this.subcategories = []; // Limpa as subcategorias antes de buscar novas
+
+      if (!this.formData.categoryId) return; // Evita requisição sem categoria válida
+
+      try {
+        const response = await axios.get(
+          `https://rust-swapp-be-407691885788.us-central1.run.app/sub_habilidade_habilidade/${this.formData.categoryId}`
+        );
+
+        console.log("Resposta da API para subcategorias:", response.data);
+
+        if (Array.isArray(response.data)) {
+          this.subcategories = response.data;
+        } else {
+          console.error("Formato inesperado para subcategorias:", response.data);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar sub habilidades:", error);
+      }
+    },
+
     async loadSkill(skillId) {
       try {
         const response = await axios.get(
-          `http://0.0.0.0:8000/api/skills/${skillId}/`
+          `https://rust-swapp-be-407691885788.us-central1.run.app/habilidades/${skillId}`
         );
-        this.formData = { ...response.data };
-        this.updateSubcategories();
+
+        const skillData = response.data;
+        this.formData = {
+          categoryId: skillData.id_categoria || "",
+          subcategoryId: skillData.id_sub_habilidade || "",
+          localization: skillData.localizacao || "",
+          title: skillData.titulo || "",
+          description: skillData.descricao || "",
+          value: skillData.valor ? parseFloat(skillData.valor).toFixed(2) : "",
+          photos: skillData.fotos || [],
+        };
+
+        await this.fetchSubHabilidades(); // Carrega as subcategorias corretamente
       } catch (error) {
         console.error("Erro ao carregar habilidade:", error);
-        alert("Erro ao carregar habilidade.");
       }
     },
-    updateSubcategories() {
-      const selectedCategory = this.categories.find(
-        (category) => category.name === this.formData.category
-      );
-      this.subcategories = selectedCategory
-        ? selectedCategory.subcategories.map((name, index) => ({
-          id: index,
-          name,
-        }))
-        : [];
+
+    // Habilita a edição de um campo
+    enableEdit(field) {
+      this.editableFields[field] = true;
     },
+
+
+    formatCurrency(event) {
+      let value = event.target.value.replace(/\D/g, ""); // Remove tudo que não for número
+      let floatValue = parseFloat(value) / 100; // Converte para decimal
+
+      // Atualiza o modelo de dados com um número puro (sem formatação)
+      this.formData.value = floatValue;
+
+      // Exibe o valor formatado no input
+      event.target.value = floatValue.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      });
+    },
+
+    // Manipula o upload de fotos
     handleFileUpload(event) {
       const files = event.target.files;
       this.formData.photos = [...this.formData.photos, ...Array.from(files)];
     },
+
+    // Remove uma foto
     removePhoto(index) {
       this.formData.photos.splice(index, 1);
     },
+
+    // Gera a pré-visualização das fotos
     getPhotoPreview(file) {
       return URL.createObjectURL(file);
     },
-    enableEdit(field) {
-      this.editableFields[field] = true;
-      // Adiciona lógica para esconder o botão
-      const button = document.querySelector(
-        `.edit-button[data-field="${field}"]`
-      );
-      if (button) {
-        button.style.display = "none";
-      }
-    },
-    formatCurrency(event) {
-      let value = event.target.value.replace(/\D/g, "");
-      value = (value / 100).toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      });
-      this.formData.value = value;
-    },
+
     async submitForm() {
-      // Validação de campos obrigatórios
-      if (!this.formData.category || !this.formData.subcategory || !this.formData.value || !this.formData.localization || !this.formData.title || !this.formData.description) {
-        alert("Por favor, preencha todos os campos obrigatórios.");
-        return; // Impede o envio do formulário se algum campo obrigatório estiver vazio
-      }
-
-      const formData = new FormData();
-      formData.append("category", this.formData.category);
-      formData.append("subcategory", this.formData.subcategory);
-      formData.append("value", this.formData.value);
-      formData.append("localization", this.formData.localization);
-      formData.append("title", this.formData.title);
-      formData.append("description", this.formData.description);
-
-      this.formData.photos.forEach((file, index) => {
-        formData.append(`photo_${index}`, file);
-      });
+      const postData = {
+        descricao: this.formData.description,
+        id_sub_habilidade: this.formData.subcategoryId,
+        id_users: 3, // Substitua com o ID real do usuário autenticado
+        valor: parseFloat(this.formData.value) || 0, // Garante um número válido
+      };
 
       try {
-        await axios.put(
-          `http://0.0.0.0:8000/api/skills/${this.$route.params.skillId}/`,
-          formData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
+        const response = await axios.post(
+          "https://rust-swapp-be-407691885788.us-central1.run.app/editar",
+          postData
         );
-        alert("Habilidade atualizada com sucesso!");
+        alert("Habilidade editada com sucesso!");
+        console.log("Resposta da API:", response.data);
       } catch (error) {
-        console.error(
-          "Erro ao atualizar habilidade:",
-          error.response?.data || error.message
-        );
-        alert("Erro ao atualizar habilidade: " + (error.response?.data || error.message));
+        console.error("Erro ao editar habilidade:", error.response?.data || error.message);
+        alert("Erro ao editar a habilidade. Verifique os dados e tente novamente.");
       }
     },
   },
   mounted() {
+    this.fetchHabilidades(); // Carrega as categorias ao montar o componente
     const skillId = this.$route.params.skillId;
     if (skillId) {
-      this.loadSkill(skillId);
-    } else {
-      alert("ID da habilidade inválido.");
+      this.loadSkill(skillId); // Carrega os dados da habilidade a ser editada
     }
   },
 };
@@ -301,7 +315,7 @@ body {
   margin: auto;
 }
 
-.select-category select{
+.select-category select {
   width: 316px;
   height: 36px;
   padding: 8px;
@@ -441,9 +455,12 @@ body {
 
 .thumbnail-wrapper {
   position: relative;
-  width: 60px; /* Largura fixa para cada miniatura */
-  height: 60px; /* Altura fixa */
-  overflow: hidden; /* Garante que partes fora do limite não sejam exibidas */
+  width: 60px;
+  /* Largura fixa para cada miniatura */
+  height: 60px;
+  /* Altura fixa */
+  overflow: hidden;
+  /* Garante que partes fora do limite não sejam exibidas */
   border-radius: 4px;
   border: 1px solid #ccc;
 }
@@ -451,7 +468,8 @@ body {
 .thumbnail-wrapper img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Garante que a imagem preencha o espaço sem distorcer */
+  object-fit: cover;
+  /* Garante que a imagem preencha o espaço sem distorcer */
 }
 
 .photo-input {
@@ -461,8 +479,10 @@ body {
 
 .photo-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Define exatamente 3 colunas */
-  gap: 10px; /* Espaçamento entre as miniaturas */
+  grid-template-columns: repeat(3, 1fr);
+  /* Define exatamente 3 colunas */
+  gap: 10px;
+  /* Espaçamento entre as miniaturas */
 }
 
 .delete-button {

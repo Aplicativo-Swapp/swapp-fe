@@ -43,10 +43,25 @@ export default {
         closePopup() {
             this.selectedService = null;
         },
-        removeLike(serviceId) {
-            this.likedServices = this.likedServices.filter(service => service.id_liked !== serviceId);
-            this.closePopup(); // Fecha o popup após remover
+        async removeLike(serviceId) {
+            try {
+                const userId = 3; // Substitua pelo ID real do usuário logado
+
+                await axios.delete("https://rust-swapp-be-407691885788.us-central1.run.app/match/delete", {
+                    data: {
+                        id_deu_like: userId,
+                        id_liked: serviceId
+                    }
+                });
+
+                this.likedServices = this.likedServices.filter(service => service.id_liked !== serviceId);
+            } catch (error) {
+                console.error("Erro ao remover curtida:", error);
+            } finally {
+                this.closePopup(); // Fecha o popup mesmo se der erro
+            }
         },
+
         async fetchLikedServices() {
             try {
                 const userId = 3; // Substitua pelo ID real do usuário logado
@@ -54,7 +69,6 @@ export default {
                     `https://rust-swapp-be-407691885788.us-central1.run.app/match/buscar_meus_likes/${userId}`
                 );
 
-                // Mapeia os dados corretamente para um objeto nomeado
                 this.likedServices = response.data.map(like => ({
                     id_liked: like[0],
                     full_name: like[1],
@@ -66,6 +80,7 @@ export default {
             }
         }
     },
+
     mounted() {
         this.fetchLikedServices(); // Chama a API ao montar o componente
     },
@@ -81,10 +96,12 @@ export default {
 
 .services-list {
     display: flex;
-    justify-content: center; /* Centraliza horizontalmente */
+    justify-content: center;
+    /* Centraliza horizontalmente */
     flex-wrap: wrap;
     gap: 20px;
-    margin-top: 20px; /* Dá um espaço no topo */
+    margin-top: 20px;
+    /* Dá um espaço no topo */
 }
 
 .service-card {
