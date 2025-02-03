@@ -3,36 +3,38 @@
         <TheHeaderMenu />
         <h1 class="page-title">DÊ MATCH DE SERVIÇOS</h1>
 
+        <!-- 🔹 Container para os filtros -->
         <div class="filters-container">
-            <select v-model="selectedCategory">
-                <option value="">Todas as categorias</option>
-                <template v-if="!isLoadingCategories">
+            <div class="filter-group">
+                <label>Categoria:</label>
+                <select v-model="selectedCategory">
+                    <option value="">Todas as categorias</option>
                     <option v-for="category in categories" :key="category" :value="category">
                         {{ category }}
                     </option>
-                </template>
-                <option v-else disabled>Carregando categorias...</option>
-            </select>
+                </select>
+            </div>
 
-            <select v-model="selectedSubcategory">
-                <option value="">Todas as subcategorias</option>
-                <template v-if="!isLoadingSubcategories">
+            <div class="filter-group">
+                <label>Subcategoria:</label>
+                <select v-model="selectedSubcategory">
+                    <option value="">Todas as subcategorias</option>
                     <option v-for="subcategory in filteredSubcategories" :key="subcategory" :value="subcategory">
                         {{ subcategory }}
                     </option>
-                </template>
-                <option v-else disabled>Carregando subcategorias...</option>
-            </select>
+                </select>
+            </div>
         </div>
 
+        <!-- 🔹 Grid de Serviços -->
         <main class="services-grid">
             <div class="service-card" v-for="service in filteredServices" :key="service.id_users">
                 <img :src="service.image || '/default-service.png'" alt="Imagem do serviço" class="service-image" />
                 <div class="service-info">
-                    <h2>{{ service.descricao }}</h2>
-                    <p>Prestador: {{ service.first_name }} {{ service.last_name }}</p>
-                    <p>Categoria: {{ service.nome_sub_habilidade }}</p>
-                    <p class="price">Valor: R$ {{ service.valor }}</p>
+                    <h2 class="service-title">{{ service.descricao }}</h2>
+                    <p class="service-provider">Prestador: {{ service.first_name }} {{ service.last_name }}</p>
+                    <p class="service-category">Categoria: {{ service.nome_sub_habilidade }}</p>
+                    <p class="service-price">Valor: <span>R$ {{ service.valor }}</span></p>
                 </div>
 
                 <!-- 🔹 Botão de Like Centralizado -->
@@ -64,11 +66,9 @@ export default {
             services: [],
             categories: [],
             subcategories: [],
-            isLoadingCategories: true,
-            isLoadingSubcategories: true,
             selectedCategory: "",
             selectedSubcategory: "",
-            userId: 1, // 🔹 Temporário - depois será substituído pelo usuário logado
+            idUsuarioLogado: 3, // 🔹 Variável temporária para simular um usuário logado
         };
     },
     computed: {
@@ -102,35 +102,24 @@ export default {
                 }));
 
                 this.categories = [...new Set(this.services.map(s => s.nome_sub_habilidade))];
-                this.isLoadingCategories = false;
-
                 this.subcategories = [...new Set(this.services.map(s => s.descricao))];
-                this.isLoadingSubcategories = false;
             } catch (error) {
                 console.error("Erro ao buscar habilidades:", error);
             }
         },
-
         async likeService(id_liked) {
             try {
                 const payload = {
-                    id_deu_like: this.userId, // 🔹 Temporário (usuário fixo como 1)
-                    id_liked: id_liked
+                    id_deu_like: this.idUsuarioLogado,
+                    id_liked: id_liked,
                 };
 
-                const response = await axios.put("https://rust-swapp-be-407691885788.us-central1.run.app/historico/add", payload, {
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                });
-
-                if (response.status === 200) {
-                    console.log("Match registrado com sucesso:", response.data);
-                } else {
-                    console.error("Erro ao registrar o match:", response);
-                }
+                await axios.post("https://rust-swapp-be-407691885788.us-central1.run.app/match/add_like", payload);
+                console.log(`Like enviado com sucesso: ${JSON.stringify(payload)}`);
+                alert("Like registrado com sucesso!");
             } catch (error) {
                 console.error("Erro ao enviar like:", error);
+                alert("Erro ao registrar o like.");
             }
         }
     },
@@ -150,13 +139,13 @@ export default {
 /* 🔹 Título da página */
 .page-title {
     text-align: center;
-    font-size: 24px;
+    font-size: 26px;
     font-weight: bold;
     color: #333;
     margin-bottom: 20px;
 }
 
-/* 🔹 Filtros agora centralizados e lado a lado */
+/* 🔹 Filtros na horizontal e centralizados */
 .filters-container {
     display: flex;
     justify-content: center;
@@ -164,8 +153,21 @@ export default {
     margin-bottom: 20px;
 }
 
-/* 🔹 Estilização dos filtros */
+/* 🔹 Grupo de filtros */
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.filter-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* 🔹 Selects dos filtros */
 .filters-container select {
+    width: 220px;
     padding: 10px;
     font-size: 14px;
     border: 2px solid #ccc;
@@ -175,7 +177,7 @@ export default {
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* 🔹 Estilo dos selects */
+/* 🔹 Efeito ao passar o mouse */
 .filters-container select:hover {
     border-color: #00c896;
 }
@@ -219,7 +221,7 @@ export default {
 }
 
 /* 🔹 Preço do serviço */
-.price {
+.service-price {
     font-size: 16px;
     font-weight: bold;
     color: #27ae60;
@@ -241,11 +243,12 @@ export default {
 
 /* 🔹 Ajuste do ícone do botão de like */
 .like-icon {
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     transition: transform 0.2s ease-in-out;
 }
 
+/* 🔹 Efeito ao passar o mouse */
 .btn-like:hover .like-icon {
     transform: scale(1.1);
 }
