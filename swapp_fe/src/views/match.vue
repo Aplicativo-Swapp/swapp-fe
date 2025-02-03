@@ -1,60 +1,52 @@
 <template>
     <div class="match-page">
-        <!-- Header -->
         <TheHeaderMenu />
-
-        <!-- Title -->
         <h1 class="page-title">DÊ MATCH DE SERVIÇOS</h1>
 
-        <div class="content">
-            <!-- Filters Section -->
-            <aside class="filters">
-                <h3>Filtros</h3>
+        <!-- 🔹 Container para os filtros -->
+        <div class="filters-container">
+            <div class="filter-group">
+                <label>Categoria:</label>
                 <select v-model="selectedCategory">
                     <option value="">Todas as categorias</option>
-                    <template v-if="!isLoadingCategories">
-                        <option v-for="category in categories" :key="category.id" :value="category.name">
-                            {{ category.name }}
-                        </option>
-                    </template>
-                    <option v-else disabled>Carregando categorias...</option>
+                    <option v-for="category in categories" :key="category" :value="category">
+                        {{ category }}
+                    </option>
                 </select>
-                <select>
-                    <option>Subcategoria</option>
-                </select>
-                <select>
-                    <option>Localização</option>
-                </select>
-            </aside>
+            </div>
 
-            <!-- Services Grid -->
-            <main class="services-grid">
-                <div class="service-card" v-for="service in filteredServices" :key="service.id">
-                    <img :src="service.image" alt="Imagem do serviço" class="service-image" />
-                    <div class="service-info">
-                        <h2>{{ service.title }}</h2>
-                        <p>Localização: {{ service.location }}</p>
-                        <div class="rating">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
-                    </div>
-                    <div class="actions">
-                        <!-- Botão de Like com imagem match.png -->
-                        <button @click.stop="likeService(service.id)" class="btn-like">
-                            <img src="@/assets/match.png" alt="Curtir" class="action-icon" />
-                        </button>
-                        <!-- Botão de Dislike com imagem nao.png -->
-                        <button @click.stop="dislikeService(service.id)" class="btn-dislike">
-                            <img src="@/assets/nao.png" alt="Não Curtir" class="action-icon" />
-                        </button>
-                    </div>
-                </div>
-            </main>
+            <div class="filter-group">
+                <label>Subcategoria:</label>
+                <select v-model="selectedSubcategory">
+                    <option value="">Todas as subcategorias</option>
+                    <option v-for="subcategory in filteredSubcategories" :key="subcategory" :value="subcategory">
+                        {{ subcategory }}
+                    </option>
+                </select>
+            </div>
         </div>
-        <!-- Popup -->
-        <CardPage v-if="isPopupOpen" :service="selectedService" actionType="close" @close="closePopup" />
 
-        <!-- Footer -->
+        <!-- 🔹 Grid de Serviços -->
+        <main class="services-grid">
+            <div class="service-card" v-for="service in filteredServices" :key="service.id_users">
+                <img :src="service.image || '/default-service.png'" alt="Imagem do serviço" class="service-image" />
+                <div class="service-info">
+                    <h2 class="service-title">{{ service.descricao }}</h2>
+                    <p class="service-provider">Prestador: {{ service.first_name }} {{ service.last_name }}</p>
+                    <p class="service-category">Categoria: {{ service.nome_sub_habilidade }}</p>
+                    <p class="service-price">Valor: <span>R$ {{ service.valor }}</span></p>
+                </div>
+
+                <!-- 🔹 Botão de Like Centralizado -->
+                <div class="like-container">
+                    <button @click.stop="likeService(service.id_users)" class="btn-like">
+                        <img src="@/assets/match.png" alt="Curtir" class="like-icon" />
+                    </button>
+                </div>
+            </div>
+        </main>
+
         <TheFooter />
-
     </div>
 </template>
 
@@ -62,172 +54,189 @@
 import axios from "axios";
 import TheFooter from "@/components/TheFooter.vue";
 import TheHeaderMenu from "@/components/TheHeaderMenu.vue";
-import CardPage from "@/components/Card.vue";
 
 export default {
     name: "MatchPage",
     components: {
         TheHeaderMenu,
         TheFooter,
-        CardPage,
     },
     data() {
         return {
-            services: [], // Inicia vazio e será preenchido pela API
-            categories: [], // Array para armazenar as categorias da API
-            isLoadingCategories: true,
+            services: [],
+            categories: [],
+            subcategories: [],
             selectedCategory: "",
-            isPopupOpen: false,
-            selectedService: null,
+            selectedSubcategory: "",
         };
     },
     computed: {
-        filteredServices() {
+        filteredSubcategories() {
             if (!this.selectedCategory) {
-                return this.services;
+                return this.subcategories;
             }
-
-            return this.services.filter((service) => service.category === this.selectedCategory);
+            return this.subcategories.filter(sub => sub.category === this.selectedCategory);
+        },
+        filteredServices() {
+            return this.services.filter(service => {
+                return (
+                    (this.selectedCategory === "" || service.nome_sub_habilidade === this.selectedCategory) &&
+                    (this.selectedSubcategory === "" || service.descricao === this.selectedSubcategory)
+                );
+            });
         }
     },
     methods: {
-        async fetchCategories() {
-            try {
-                const response = await axios.get("http://localhost:3000/services"); // Substituir pela URL correta da API
-                this.categories = response.data;
-            } catch (error) {
-                console.error("Erro ao buscar categorias:", error);
-            } finally {
-                this.isLoadingCategories = false;
-            }
-        },
         async fetchServices() {
             try {
-                const response = await axios.get("http://localhost:3000/services"); // Substituir pela URL correta da API
-                this.services = response.data;
+                const response = await axios.get("https://rust-swapp-be-407691885788.us-central1.run.app/obter_tudo");
+                this.services = response.data.map(item => ({
+                    id_users: item.id_users,
+                    first_name: item.first_name,
+                    last_name: item.last_name,
+                    nome_sub_habilidade: item.nome_sub_habilidade,
+                    descricao: item.descricao,
+                    valor: item.valor,
+                    image: "/default-service.png"
+                }));
+
+                this.categories = [...new Set(this.services.map(s => s.nome_sub_habilidade))];
+                this.subcategories = [...new Set(this.services.map(s => s.descricao))];
             } catch (error) {
-                console.error("Erro ao buscar serviços:", error);
+                console.error("Erro ao buscar habilidades:", error);
             }
         },
         likeService(id) {
             console.log(`Serviço ${id} curtido!`);
-        },
-        dislikeService(id) {
-            console.log(`Serviço ${id} descartado!`);
-        },
-        openPopup(service) {
-            this.selectedService = service;
-            this.isPopupOpen = true;
-        },
-        closePopup() {
-            this.isPopupOpen = false;
-            this.selectedService = null;
-        },
+        }
     },
     mounted() {
-        this.fetchCategories();
-        this.fetchServices(); // Busca os serviços ao carregar a página
+        this.fetchServices();
     },
 };
 </script>
 
 <style scoped>
-.action-icon {
-    width: 50px;   /* Largura da imagem */
-    height: 50px;  /* Altura da imagem */
-    object-fit: contain; /* Garante que a imagem não distorça */
-    pointer-events: none; /* Evita que o clique passe para a imagem */
-}
-
-.btn-like, .btn-dislike {
-    background-color: transparent; /* Remove fundo padrão do botão */
-    border: none; /* Remove a borda padrão */
-    cursor: pointer; /* Adiciona um cursor de clique */
-    padding: 0; /* Remove o espaçamento interno */
-}
-
-
+/* 🔹 Layout principal */
 .match-page {
-    color: #333;
-    background-color: #ececec;
+    background-color: #f5f5f5;
+    padding: 20px;
 }
 
-.search-bar {
-    flex: 1;
-    margin: 0 15px;
-    padding: 5px;
-}
-
+/* 🔹 Título da página */
 .page-title {
     text-align: center;
-    margin: 20px 0;
+    font-size: 26px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
 }
 
-.content {
+/* 🔹 Filtros na horizontal e centralizados */
+.filters-container {
     display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+/* 🔹 Grupo de filtros */
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.filter-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* 🔹 Selects dos filtros */
+.filters-container select {
+    width: 220px;
+    padding: 10px;
+    font-size: 14px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: white;
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 🔹 Efeito ao passar o mouse */
+.filters-container select:hover {
+    border-color: #00c896;
+}
+
+.filters-container select:focus {
+    outline: none;
+    border-color: #00c896;
+    box-shadow: 0px 0px 5px rgba(0, 200, 150, 0.5);
+}
+
+/* 🔹 Grid de Serviços */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
     padding: 20px;
 }
 
-.filters {
-    flex: 1;
-    max-width: 200px;
-}
-
-.filters select {
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 5px;
-}
-
-.services-grid {
-    flex: 3;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-}
-
+/* 🔹 Estilo dos cards */
 .service-card {
-    border: 0.5px solid #ccc;
-    border-radius: 15px;
-    padding: 10px;
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
     text-align: center;
-    background-color: white;
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Suaviza o efeito */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative; /* Para posicionar o botão de like corretamente */
 }
 
-.service-card:hover {
-    transform: scale(1.05); /* Aplica o zoom */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adiciona uma sombra para destaque */
-}
-
+/* 🔹 Ajuste da imagem do serviço */
 .service-image {
     width: 100%;
-    height: auto;
+    height: 180px;
+    object-fit: cover;
     border-radius: 5px;
 }
 
-.actions {
+/* 🔹 Informações do serviço */
+.service-info h2 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* 🔹 Preço do serviço */
+.service-price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #27ae60;
+}
+
+/* 🔹 Contêiner do botão de like */
+.like-container {
     display: flex;
-    justify-content: center; /* Centraliza os botões */
-    gap: 25px; /* Adiciona um espaçamento uniforme entre os botões */
+    justify-content: center;
     margin-top: 10px;
 }
 
-.btn-like,
-.btn-dislike {
-    font-size: 18px;
-    border: none;
+/* 🔹 Estilo do botão de like */
+.btn-like {
     background: none;
+    border: none;
     cursor: pointer;
 }
 
-.btn-like {
-    color: green;
+/* 🔹 Ajuste do ícone do botão de like */
+.like-icon {
+    width: 45px;
+    height: 45px;
+    transition: transform 0.2s ease-in-out;
 }
 
-.btn-dislike {
-    color: red;
+/* 🔹 Efeito ao passar o mouse */
+.btn-like:hover .like-icon {
+    transform: scale(1.1);
 }
 </style>
-
