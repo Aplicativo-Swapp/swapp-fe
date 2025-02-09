@@ -218,7 +218,10 @@ export default {
                     other: "Outro",
                 };
 
-                this.profileImage = response.data.profile_picture_url || require('@/assets/login.png') 
+                if (response.data.profile_picture_url) {
+                    this.profileImage = response.data.profile_picture_url; // Atualiza apenas se uma nova imagem for retornada
+                }
+ 
 
                 this.formData = {
                     ...this.formData,
@@ -250,17 +253,30 @@ export default {
                     Outro: "other",
                 };
 
-                const formDataToSend = {
-                    ...this.formData,
-                    gender: genderMapInverse[this.formData.gender] || null, // Converte para o formato esperado pelo backend
-                };
+                const formDataToSend = new FormData();
+                formDataToSend.append("first_name", this.formData.first_name);
+                formDataToSend.append("last_name", this.formData.last_name);
+                formDataToSend.append("email", this.formData.email);
+                formDataToSend.append("gender", genderMapInverse[this.formData.gender] || "");
+                console.log(genderMapInverse[this.formData.gender] || "");
+                formDataToSend.append("birth_date", this.formData.birth_date);
+                formDataToSend.append("zip_code", this.formData.zip_code);
+                formDataToSend.append("state", this.formData.state);
+                formDataToSend.append("city", this.formData.city);
+                formDataToSend.append("address", this.formData.address);
+                formDataToSend.append("number", this.formData.number);
+                formDataToSend.append("complement", this.formData.complement);
+
+                if (this.formData.profile_image) {
+                    formDataToSend.append("profile_image", this.formData.profile_image);
+                }
 
                 await axios.put(
                     "http://34.56.213.96:8000/api/users/update/",
                     formDataToSend,
                     {
                         headers: {
-                            Authorization: `Bearer ${token}`, // Passa o token no cabeçalho Authorization
+                            Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data", // Passa o token no cabeçalho Authorization
                         },
                     }
                 );
@@ -285,6 +301,7 @@ export default {
         handleFileUpload(event) {
             const file = event.target.files[0];
             if (file) {
+                this.formData.profile_image = file;
                 this.profileImage = URL.createObjectURL(file);
             }
         },

@@ -14,24 +14,8 @@
 
     <!-- Saudação e ícone (direita) -->
     <div class="user-section">
-      <span>Olá, {{ first_name }}</span>
-      <!--<div class="notification-section">
-        <button @click="toggleNotifications" class="notification-button">
-          <img src="@/assets/notificacao.png" alt="Notificação" class="notification-icon" />
-          <span v-if="notifications.length > 0" class="notification-count">
-            {{ notifications.length }}
-          </span>
-        </button>
-        <div v-if="showNotifications" class="notification-popup">
-          <ul>
-            <li v-if="notifications.length === 0">Sem notificações.</li>
-            <li v-else v-for="(notification, index) in notifications" :key="index">
-              {{ notification.message }}
-            </li>
-          </ul>
-        </div>
-      </div>-->
-      <img src="@/assets/avatar.png" alt="Avatar" class="avatar" @click="irParaEditarUsuario" />
+      <span>Olá, {{ usuarioNome }}</span>
+      <img :src="profileImage || require('@/assets/avatar.png')" alt="Avatar" class="avatar" @click="irParaEditarUsuario" />
     </div>
 
     <!-- Popup -->
@@ -43,174 +27,105 @@
 import PopupMenu from "@/components/PopUp.vue";
 
 export default {
-name: "TheHeaderMenu",
-components: {
-  PopupMenu,
-},
-data() {
-  return {
-    usuarioNome: "", // Nome do usuário será armazenado aqui
-    showPopup: false, // Adicionado para controlar o estado do popup
-    showNotifications: false,
-    notifications: [],
-  };
-},
-methods: {
-  togglePopup() {
-    this.showPopup = !this.showPopup;
+  name: "TheHeaderMenu",
+  components: {
+    PopupMenu,
   },
-  toggleNotifications() {
-    this.showNotifications = !this.showNotifications;
+  data() {
+    return {
+      usuarioNome: "", // Nome do usuário
+      profileImage: null, // URL da imagem de perfil
+      showPopup: false,
+      showNotifications: false,
+      notifications: [],
+    };
   },
-  async buscarUsuarioLogado() {
-    try {
-      const response = await fetch('http://34.56.213.96:8000/api/users/detail'); // Altere para o endpoint correto
-      const data = await response.json();
-      this.usuarioNome = data.nome; // Salva o nome do usuário
-    } catch (error) {
-      console.error("Erro ao buscar usuário logado:", error);
-    }
-  },
-  async buscarNotificacoes() {
-    try {
-      const response = await fetch('/api/notificacoes'); // Altere para o endpoint correto
-      const data = await response.json();
-      this.notifications = data || [];
-    } catch (error) {
-      console.error("Erro ao buscar notificações:", error);
-      this.notifications = [];
-    }
-  },
-  irParaEditarUsuario() {
-    // Redireciona para a página de edição do usuário
-    this.$router.push("/editar-perfil");
-  },
-},
-mounted() {
-  this.buscarUsuarioLogado(); // Busca os dados do usuário ao carregar o componente
-  if (this.usuarioNome) {
-    this.buscarNotificacoes(); // Busca as notificações ao carregar o componente
-  }
-},
-};
+  methods: {
+    togglePopup() {
+      this.showPopup = !this.showPopup;
+    },
+    toggleNotifications() {
+      this.showNotifications = !this.showNotifications;
+    },
+    async buscarUsuarioLogado() {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+          console.error("Token não encontrado");
+          return;
+        }
 
+        const response = await fetch('http://34.56.213.96:8000/api/users/detail/', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+        this.usuarioNome = data.first_name;
+        this.profileImage = data.profile_picture_url; // Atualiza a imagem de perfil
+      } catch (error) {
+        console.error("Erro ao buscar usuário logado:", error);
+      }
+    },
+    irParaEditarUsuario() {
+      this.$router.push("/editar-perfil");
+    },
+  },
+  mounted() {
+    this.buscarUsuarioLogado();
+  },
+};
 </script>
 
 <style scoped>
 .header {
-background-color: #14241F;
-display: flex;
-align-items: center;
-justify-content: space-between;
-padding: 10px 20px;
-color: #FFFFFF;
+  background-color: #14241F;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  color: #FFFFFF;
 }
 
-/* Botão de menu (esquerda) */
 .menu-button {
-background: none;
-border: none;
-cursor: pointer;
-display: flex;
-flex-direction: column;
-justify-content: space-between; /* Garante espaçamento igual entre as barras */
-width: 30px; /* Define a largura total do botão */
-height: 24px; /* Altura total para acomodar as 3 barras */
-padding: 0; /* Remove o espaçamento padrão */
-
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 24px;
+  padding: 0;
 }
 
 .menu-icon {
-width: 100%; /* Barra ocupa toda a largura do botão */
-height: 4px; /* Altura de cada barra */
-background-color: #76e3c3; /* Cor branca para as barras */
-border-radius: 2px; /* Borda arredondada para um visual mais suave */
+  width: 100%;
+  height: 4px;
+  background-color: #76e3c3;
+  border-radius: 2px;
 }
 
-/* Logotipo (centro) */
 .logo {
-width: 150px;
-margin-top: 10px;
-margin-bottom: 10px;
-height: auto;
-cursor: pointer;
+  width: 150px;
+  margin: 10px 0;
+  cursor: pointer;
 }
 
-/* Seção de usuário (direita) */
 .user-section {
-display: flex;
-align-items: center;
-gap: 10px;
-font-size: 14px;
-cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  cursor: pointer;
 }
 
 .avatar {
-width: 30px;
-height: 30px;
-border-radius: 50%;
-border: 2px solid #FFFFFF;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #FFFFFF;
+  object-fit: cover;
 }
-
-/* Notificaçãoes */
-.notification-section {
-position: relative;
-}
-
-.notification-button {
-background: none;
-border: none;
-cursor: pointer;
-position: relative;
-}
-
-.notification-icon {
-width: 20px;
-height: 20px;
-}
-
-.notification-count {
-position: absolute;
-top: -5px;
-right: -5px;
-background-color: red;
-color: white;
-font-size: 12px;
-font-weight: bold;
-border-radius: 50%;
-padding: 2px 6px;
-}
-
-.notification-popup {
-position: absolute;
-top: 30px;
-right: 0;
-background: white;
-border: 1px solid #ccc;
-border-radius: 5px;
-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-width: 200px;
-z-index: 1000;
-}
-
-.notification-popup ul {
-list-style: none;
-margin: 0;
-padding: 10px;
-}
-
-.notification-popup li {
-padding: 8px;
-border-bottom: 1px solid #eee;
-}
-
-.notification-popup li:last-child {
-border-bottom: none;
-}
-
-.notification-popup li:hover {
-background-color: #f9f9f9;
-cursor: pointer;
-}
-
 </style>
