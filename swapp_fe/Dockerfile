@@ -1,5 +1,5 @@
 # Use a imagem oficial do Node.js como base
-FROM node:16-alpine
+FROM node:16-alpine AS build
 
 # Defina o diretório de trabalho dentro do container
 WORKDIR /app
@@ -14,13 +14,13 @@ RUN npm install
 COPY . .
 
 # Compile a aplicação para produção
-RUN npm run serve
+RUN npm run build
 
 # Use uma imagem leve do servidor Nginx para servir a aplicação
 FROM nginx:alpine
 
 # Copie os arquivos compilados para a pasta de conteúdo do Nginx
-COPY --from=0 /app/dist /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html
 
 # Exponha a porta padrão do Nginx
 EXPOSE 80
