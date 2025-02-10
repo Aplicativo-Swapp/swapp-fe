@@ -32,34 +32,65 @@
 
 <script>
 import axios from "axios";
-import { getLoggedUserId,redirectToLogin } from '@/utils/auth'; // Importa as funções utilitárias
-
+import {redirectToLogin } from "@/utils/auth"; // Importa funções utilitárias
 
 export default {
   name: "LikesPage",
 
   data() {
     return {
-      likes: [], // Lista de curtidas
+      likes: [], // Lista de curtidas recebidas
       isLoading: true, // Controle de carregamento
-      userId: getLoggedUserId(), // ID do usuário logado (temporário, depois será variável global)
+      userId: null, // ID do usuário logado
     };
   },
 
   methods: {
+    async fetchLoggedUser() {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+          console.error("Token não encontrado");
+          redirectToLogin(this.$router);
+          return;
+        }
+
+        const response = await fetch("http://34.56.213.96:8000/api/users/detail/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+        this.userId = data.id; // Define o ID do usuário logado
+        console.log("ID do usuário logado:", this.userId);
+
+        if (this.userId) {
+          this.fetchLikes(); // Chama a função para buscar curtidas após obter o ID
+        }
+      } catch (error) {
+        console.error("Erro ao buscar usuário logado:", error);
+      }
+    },
+
     async fetchLikes() {
-      const userId = getLoggedUserId();
-      if (!userId) {
-        redirectToLogin(this.$router);
+      if (!this.userId) {
+        console.error("ID do usuário logado não encontrado.");
         return;
       }
+
       try {
         const response = await axios.get(
-          `https://rust-swapp-be-407691885788.us-central1.run.app/match/buscar_likes/${userId}`
+          `https://rust-swapp-be-407691885788.us-central1.run.app/match/buscar_likes/${this.userId}`
         );
-        this.likes = response.data; // Atualiza os dados da API
+
+        console.log("Resposta da API:", response.data); // Verifique o que está vindo da API
+
+        // Atribui diretamente os dados, sem filtrar
+        this.likes = Array.isArray(response.data) ? response.data : []; 
+        console.log("Curtidas recebidas:", this.likes);
       } catch (error) {
-        console.error("Erro ao buscar curtidas:", error);
+        console.error("Erro ao buscar curtidas:", error.response || error.message);
       } finally {
         this.isLoading = false;
       }
@@ -68,8 +99,8 @@ export default {
     async createMatch(like) {
       try {
         const payload = {
-          id_deu_like: this.userId, // Quem deu o like
-          id_liked: like[0], // Quem recebeu o like (usuário logado)
+          id_deu_like: like[0], // Quem deu o like
+          id_liked: this.userId, // Quem recebeu o like (usuário logado)
         };
 
         console.log("Payload:", payload);
@@ -88,7 +119,7 @@ export default {
   },
 
   mounted() {
-    this.fetchLikes(); // Busca os dados ao carregar a página
+    this.fetchLoggedUser(); // Obtém o ID do usuário logado antes de buscar curtidas
   },
 };
 </script>

@@ -40,27 +40,57 @@
 
 <script>
 import axios from "axios";
-import { getLoggedUserId, redirectToLogin } from "@/utils/auth";
+import { redirectToLogin } from "@/utils/auth";
 
 export default {
   name: "MatchsComponent",
   data() {
     return {
       matches: [],
+      userId: null, // ID do usuário logado
     };
   },
   methods: {
+    async fetchLoggedUser() {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+          console.error("Token não encontrado");
+          redirectToLogin(this.$router);
+          return;
+        }
+
+        const response = await fetch("http://34.56.213.96:8000/api/users/detail/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+        this.userId = data.id; // Define o ID do usuário logado
+        console.log("ID do usuário logado:", this.userId);
+
+        if (this.userId) {
+          this.fetchMatches(); // Chama a função para buscar matches após obter o ID
+        }
+      } catch (error) {
+        console.error("Erro ao buscar usuário logado:", error);
+      }
+    },
+
     async fetchMatches() {
-      const userId = getLoggedUserId();
-      if (!userId) {
-        redirectToLogin(this.$router);
+      if (!this.userId) {
+        console.error("ID do usuário logado não encontrado.");
         return;
       }
 
       try {
         const response = await axios.get(
-          `https://rust-swapp-be-407691885788.us-central1.run.app/match/all/${userId}`
+          `https://rust-swapp-be-407691885788.us-central1.run.app/match/all/${this.userId}`
         );
+        
+        console.log("Resposta da API de matches:", response.data);
+        
         this.matches = response.data.map(match => ({
           id: match[0],
           them: match[1],
@@ -73,16 +103,16 @@ export default {
         console.error("Erro ao buscar matches:", error);
       }
     },
+
     async dislikeAction(matchId, likedUserId) {
-      const userId = getLoggedUserId();
-      if (!userId) {
-        redirectToLogin(this.$router);
+      if (!this.userId) {
+        console.error("ID do usuário logado não encontrado.");
         return;
       }
 
       try {
         const payload = {
-          id_deu_like: userId,
+          id_deu_like: this.userId,
           id_liked: likedUserId,
         };
 
@@ -96,12 +126,14 @@ export default {
         console.error("Erro ao remover match:", error);
       }
     },
+
     openChat(id) {
       console.log(`Abrindo chat para o match com ID: ${id}`);
     },
   },
+  
   mounted() {
-    this.fetchMatches();
+    this.fetchLoggedUser(); // Obtém o ID do usuário logado antes de buscar matches
   },
 };
 </script>

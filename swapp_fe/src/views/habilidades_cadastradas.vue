@@ -30,44 +30,87 @@
     </div>
   </template>
   
-  <script>
-  import TheFooterSimp from "@/components/TheFooterSimp.vue";
-  import TheHeaderMenu from "@/components/TheHeaderMenu.vue";
-  
-  export default {
-    name: "HabilidadesCadastradas",
-    components: {
-      TheHeaderMenu,
-      TheFooterSimp,
-    },
-    data() {
-      return {
-        habilidades: [],
-      };
-    },
-    methods: {
-      async buscarHabilidades() {
-        try {
-          const response = await fetch("/api/usuario/habilidades"); // Atualize o endpoint
-          if (response.ok) {
-            this.habilidades = await response.json();
-          } else {
-            console.error("Erro ao buscar habilidades:", response.statusText);
-          }
-        } catch (error) {
-          console.error("Erro ao buscar habilidades:", error);
+<script>
+import TheFooterSimp from "@/components/TheFooterSimp.vue";
+import TheHeaderMenu from "@/components/TheHeaderMenu.vue";
+import axios from "axios";
+
+export default {
+  name: "HabilidadesCadastradas",
+  components: {
+    TheHeaderMenu,
+    TheFooterSimp,
+  },
+  data() {
+    return {
+      habilidades: [],
+      idUsuarioLogado: null, // Armazena o ID do usuário logado
+    };
+  },
+  methods: {
+    // Obtém o ID do usuário logado via API
+    async buscarUsuarioLogado() {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+          console.error("Token não encontrado");
+          return;
         }
-      },
-      editarHabilidade(id) {
-        this.$router.push(`/editar-habilidade/${id}`); // Navega para a página de edição
-      },
+
+        const response = await fetch("http://34.56.213.96:8000/api/users/detail/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+        this.idUsuarioLogado = data.id; // Obtém o ID do usuário logado
+        console.log("ID do usuário logado:", this.idUsuarioLogado);
+
+        // Após obter o ID, busca as habilidades cadastradas
+        if (this.idUsuarioLogado) {
+          this.buscarHabilidades();
+        }
+
+      } catch (error) {
+        console.error("Erro ao buscar usuário logado:", error);
+      }
     },
-    mounted() {
-      this.buscarHabilidades(); // Busca as habilidades ao carregar o componente
+
+    // Busca as habilidades cadastradas do usuário logado
+    async buscarHabilidades() {
+      if (!this.idUsuarioLogado) {
+        console.error("Usuário não está logado.");
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          `https://rust-swapp-be-407691885788.us-central1.run.app/obter/${this.idUsuarioLogado}`
+        );
+
+        if (response.status === 200) {
+          this.habilidades = response.data;
+          console.log("Habilidades carregadas:", this.habilidades);
+        } else {
+          console.error("Erro ao buscar habilidades:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar habilidades:", error);
+      }
     },
-  };
-  </script>
-  
+
+    // Redireciona para edição da habilidade selecionada
+    editarHabilidade(id) {
+      this.$router.push(`/editar-habilidade/${id}`);
+    },
+  },
+
+  mounted() {
+    this.buscarUsuarioLogado(); // Obtém o ID do usuário logado ao montar o componente
+  },
+};
+</script>  
   
   <style scoped>
   .habilidades-cadastradas {

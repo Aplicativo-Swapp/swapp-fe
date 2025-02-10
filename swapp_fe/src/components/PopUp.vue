@@ -9,7 +9,7 @@
         </div>
       </div>
       <ul class="popup-menu">
-        <li @click="navegar('/')">Home Page</li>
+        <li @click="navegar('/home')">Home Page</li>
         <li @click="navegar('/editar-perfil')">Editar Perfil</li>
         <li @click="navegar('/editar-senha')">Editar Senha</li>
         <li @click="navegar('/editar-habilidade')">Editar Habilidade</li>
