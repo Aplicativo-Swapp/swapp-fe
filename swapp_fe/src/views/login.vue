@@ -60,12 +60,13 @@ export default {
               password: this.formData.password,
           });
 
-          const { access, refresh, message } = response.data; 
+          const { access, refresh, id, message } = response.data; 
           if (access && refresh) {
                    
             // Armazena o token de acesso e o de atualização no local storage
             localStorage.setItem("authToken", access);
             localStorage.setItem("refreshToken", refresh);
+            localStorage.setItem("userId", id); // Salva o ID do usuário logado
           
             alert(message || "Login realizado com sucesso!");
             this.$router.push({ name: "HomeLogada" }); // Redireciona para a página principal

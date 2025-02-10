@@ -32,6 +32,8 @@
 
 <script>
 import axios from "axios";
+import { getLoggedUserId } from '@/utils/auth.js'; // Importa as funções utilitárias
+
 
 export default {
   name: "LikesPage",
@@ -40,7 +42,7 @@ export default {
     return {
       likes: [], // Lista de curtidas
       isLoading: true, // Controle de carregamento
-      userId: 3, // ID do usuário logado (temporário, depois será variável global)
+      userId: getLoggedUserId(), // ID do usuário logado (temporário, depois será variável global)
     };
   },
 

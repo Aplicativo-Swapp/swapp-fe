@@ -24,6 +24,8 @@
 <script>
 import axios from "axios";
 import CardPage from "@/components/Card.vue";
+import { getLoggedUserId } from "@/utils/auth.js";
+
 
 export default {
     name: "MinhasCurtidasComponent",
@@ -45,7 +47,7 @@ export default {
         },
         async removeLike(serviceId) {
             try {
-                const userId = 3; // Substitua pelo ID real do usuário logado
+                const userId = getLoggedUserId(); // Substitua pelo ID real do usuário logado
 
                 await axios.delete("https://rust-swapp-be-407691885788.us-central1.run.app/match/delete", {
                     data: {
@@ -64,7 +66,7 @@ export default {
 
         async fetchLikedServices() {
             try {
-                const userId = 3; // Substitua pelo ID real do usuário logado
+                const userId = getLoggedUserId(); // Substitua pelo ID real do usuário logado
                 const response = await axios.get(
                     `https://rust-swapp-be-407691885788.us-central1.run.app/match/buscar_meus_likes/${userId}`
                 );

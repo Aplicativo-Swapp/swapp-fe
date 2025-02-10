@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- Cabeçalho -->
-        <TheHeader />
+        <TheHeaderMenu />
 
         <!-- Formulário de edição -->
         <div class="form-container">
@@ -46,12 +46,12 @@
 <script>
 import axios from "axios";
 import TheFooterSimp from "@/components/TheFooterSimp.vue";
-import TheHeader from "@/components/TheHeaderLogo.vue";
+import TheHeaderMenu from "@/components/TheHeaderMenu.vue";
 
 export default {
     name: "EditarSenha",
     components: {
-        TheHeader,
+        TheHeaderMenu,
         TheFooterSimp,
     },
     data() {

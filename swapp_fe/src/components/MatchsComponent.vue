@@ -6,7 +6,6 @@
     </div>
     <div v-else class="matches-list">
       <div v-for="match in matches" :key="match.id" class="match-card">
-        <!-- Cabeçalho -->
         <div class="match-header">
           <div class="user-info">
             <img :src="match.userImage" alt="Foto do usuário" class="user-photo" />
@@ -17,18 +16,16 @@
         <hr class="divider" />
         <div class="match-body">
           <p><strong>Você Curtiu:</strong></p>
-          <p>{{ match.yourSkill }}</p> <!-- Exibe a habilidade do usuário logado -->
+          <p>{{ match.yourSkill }}</p>
         </div>
         <hr class="divider" />
         <div class="match-actions">
-          <!-- Botão de Chat -->
           <div class="action-button">
             <button @click="openChat(match.id)" class="btn-chat">
               <img src="@/assets/chat.png" alt="Chat" class="chat-icon" />
             </button>
             <p class="chat-text">Conversar</p>
           </div>
-          <!-- Botão de Dislike -->
           <div class="action-button">
             <button @click="dislikeAction(match.id, match.them_id)" class="btn-dislike">
               <img src="@/assets/nao.png" alt="Dislike" class="action-icon" />
@@ -43,47 +40,57 @@
 
 <script>
 import axios from "axios";
+import { getLoggedUserId, redirectToLogin } from "@/utils/auth.js";
 
 export default {
   name: "MatchsComponent",
   data() {
     return {
-      userId: 3, // Simulação do usuário logado, substituir depois pela variável global
       matches: [],
     };
   },
   methods: {
     async fetchMatches() {
+      const userId = getLoggedUserId();
+      if (!userId) {
+        redirectToLogin(this.$router);
+        return;
+      }
+
       try {
         const response = await axios.get(
-          `https://rust-swapp-be-407691885788.us-central1.run.app/match/all/${this.userId}`
+          `https://rust-swapp-be-407691885788.us-central1.run.app/match/all/${userId}`
         );
         this.matches = response.data.map(match => ({
-          id: match[0], // ID do match
-          them: match[1], // Nome da pessoa que curtiu você
-          theirSkill: match[2], // Habilidade que essa pessoa oferece
-          yourSkill: match[5], // Sua habilidade que foi curtida
-          them_id: match[3], // ID da pessoa que curtiu
-          userImage: "https://via.placeholder.com/50", // Imagem temporária
+          id: match[0],
+          them: match[1],
+          theirSkill: match[2],
+          yourSkill: match[5],
+          them_id: match[3],
+          userImage: "https://via.placeholder.com/50",
         }));
       } catch (error) {
         console.error("Erro ao buscar matches:", error);
       }
     },
     async dislikeAction(matchId, likedUserId) {
+      const userId = getLoggedUserId();
+      if (!userId) {
+        redirectToLogin(this.$router);
+        return;
+      }
+
       try {
         const payload = {
-          id_deu_like: this.userId, // Usuário logado
-          id_liked: likedUserId,  // Usuário que foi curtido
+          id_deu_like: userId,
+          id_liked: likedUserId,
         };
 
         await axios.delete("https://rust-swapp-be-407691885788.us-central1.run.app/match/delete", {
           data: payload,
         });
 
-        // Atualiza a lista removendo o match
         this.matches = this.matches.filter(match => match.id !== matchId);
-
         console.log(`Match ${matchId} removido com sucesso!`);
       } catch (error) {
         console.error("Erro ao remover match:", error);
@@ -149,18 +156,6 @@ export default {
   border: 2px solid #ddd;
 }
 
-.match-header p,
-.match-body p {
-  margin: 0.5rem 0;
-  font-size: 1rem;
-}
-
-.divider {
-  margin: 1rem 0;
-  border: none;
-  border-top: 1px solid #ddd;
-}
-
 .match-actions {
   display: flex;
   justify-content: space-evenly;
@@ -189,7 +184,6 @@ export default {
   width: 70px;
   height: 70px;
   object-fit: contain;
-  pointer-events: none;
 }
 
 .chat-text,
@@ -197,6 +191,5 @@ export default {
   margin-top: 10px;
   font-size: 0.9rem;
   color: #555;
-  text-align: center;
 }
 </style>
