@@ -11,12 +11,12 @@
             <img :src="match.userImage" alt="Foto do usuário" class="user-photo" />
             <p><strong>{{ match.them }}</strong> curtiu:</p>
           </div>
-          <p>{{ match.theirSkill }}</p>
+          <p class="service">{{ match.yourSkill }}</p>
         </div>
         <hr class="divider" />
         <div class="match-body">
           <p><strong>Você Curtiu:</strong></p>
-          <p>{{ match.yourSkill }}</p>
+          <p class="service">{{ match.theirSkill }}</p>
         </div>
         <hr class="divider" />
         <div class="match-actions">
@@ -67,11 +67,11 @@ export default {
         });
 
         const data = await response.json();
-        this.userId = data.id; // Define o ID do usuário logado
+        this.userId = data.id;
         console.log("ID do usuário logado:", this.userId);
 
         if (this.userId) {
-          this.fetchMatches(); // Chama a função para buscar matches após obter o ID
+          this.fetchMatches();
         }
       } catch (error) {
         console.error("Erro ao buscar usuário logado:", error);
@@ -86,7 +86,7 @@ export default {
 
       try {
         const response = await axios.get(
-          `https://rust-swapp-be-407691885788.us-central1.run.app/match/all/${this.userId}`
+          `https://rust-swapp-be-407691885788.us-central1.run.app/match/${this.userId}`
         );
         
         console.log("Resposta da API de matches:", response.data);
@@ -127,13 +127,14 @@ export default {
       }
     },
 
-    openChat(id) {
-      console.log(`Abrindo chat para o match com ID: ${id}`);
+    openChat(matchId) {
+      this.$router.push(`/chat/${matchId}`);
+      console.log(`Abrindo chat para o match com ID: ${matchId}`);
     },
   },
   
   mounted() {
-    this.fetchLoggedUser(); // Obtém o ID do usuário logado antes de buscar matches
+    this.fetchLoggedUser();
   },
 };
 </script>

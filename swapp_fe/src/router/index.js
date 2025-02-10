@@ -26,7 +26,7 @@ const routes = [
   { path: '/editar-senha', component: EditarSenha, name: 'EditarSenha' },
   { path: '/match', component: Match, name: 'Match' },
   { path: '/minha-atividade', component: MinhaAtividade, name: 'MinhaAtividade' },
-  { path: '/chat', component: ChatPage, name: 'Chat' },
+  { path: '/chat/:matchId', component: ChatPage, name: 'Chat' },
 ];
 
 const router = createRouter({
