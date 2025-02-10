@@ -56,76 +56,103 @@ import TheFooter from "@/components/TheFooter.vue";
 import TheHeaderMenu from "@/components/TheHeaderMenu.vue";
 
 export default {
-    name: "MatchPage",
-    components: {
-        TheHeaderMenu,
-        TheFooter,
+  name: "MatchPage",
+  components: {
+    TheHeaderMenu,
+    TheFooter,
+  },
+  data() {
+    return {
+      services: [],
+      categories: [],
+      subcategories: [],
+      selectedCategory: "",
+      selectedSubcategory: "",
+      idUsuarioLogado: null, // Inicializa como null
+    };
+  },
+  computed: {
+    filteredSubcategories() {
+      if (!this.selectedCategory) {
+        return this.subcategories;
+      }
+      return this.subcategories.filter(sub => sub.category === this.selectedCategory);
     },
-    data() {
-        return {
-            services: [],
-            categories: [],
-            subcategories: [],
-            selectedCategory: "",
-            selectedSubcategory: "",
-            idUsuarioLogado: 3, // 🔹 Variável temporária para simular um usuário logado
+    filteredServices() {
+      return this.services.filter(service => {
+        return (
+          (this.selectedCategory === "" || service.nome_sub_habilidade === this.selectedCategory) &&
+          (this.selectedSubcategory === "" || service.descricao === this.selectedSubcategory)
+        );
+      });
+    }
+  },
+  methods: {
+    async fetchServices() {
+      try {
+        const response = await axios.get("https://rust-swapp-be-407691885788.us-central1.run.app/obter_tudo");
+        this.services = response.data.map(item => ({
+          id_users: item.id_users,
+          first_name: item.first_name,
+          last_name: item.last_name,
+          nome_sub_habilidade: item.nome_sub_habilidade,
+          descricao: item.descricao,
+          valor: item.valor,
+          image: "/default-service.png"
+        }));
+
+        this.categories = [...new Set(this.services.map(s => s.nome_sub_habilidade))];
+        this.subcategories = [...new Set(this.services.map(s => s.descricao))];
+      } catch (error) {
+        console.error("Erro ao buscar habilidades:", error);
+      }
+    },
+    async likeService(id_liked) {
+      if (!this.idUsuarioLogado) {
+        alert("Você precisa estar logado para dar like!");
+        return;
+      }
+
+      try {
+        const payload = {
+          id_deu_like: this.idUsuarioLogado,
+          id_liked: id_liked,
         };
-    },
-    computed: {
-        filteredSubcategories() {
-            if (!this.selectedCategory) {
-                return this.subcategories;
-            }
-            return this.subcategories.filter(sub => sub.category === this.selectedCategory);
-        },
-        filteredServices() {
-            return this.services.filter(service => {
-                return (
-                    (this.selectedCategory === "" || service.nome_sub_habilidade === this.selectedCategory) &&
-                    (this.selectedSubcategory === "" || service.descricao === this.selectedSubcategory)
-                );
-            });
-        }
-    },
-    methods: {
-        async fetchServices() {
-            try {
-                const response = await axios.get("https://rust-swapp-be-407691885788.us-central1.run.app/obter_tudo");
-                this.services = response.data.map(item => ({
-                    id_users: item.id_users,
-                    first_name: item.first_name,
-                    last_name: item.last_name,
-                    nome_sub_habilidade: item.nome_sub_habilidade,
-                    descricao: item.descricao,
-                    valor: item.valor,
-                    image: "/default-service.png"
-                }));
 
-                this.categories = [...new Set(this.services.map(s => s.nome_sub_habilidade))];
-                this.subcategories = [...new Set(this.services.map(s => s.descricao))];
-            } catch (error) {
-                console.error("Erro ao buscar habilidades:", error);
-            }
-        },
-        async likeService(id_liked) {
-            try {
-                const payload = {
-                    id_deu_like: this.idUsuarioLogado,
-                    id_liked: id_liked,
-                };
-
-                await axios.post("https://rust-swapp-be-407691885788.us-central1.run.app/match/add_like", payload);
-                console.log(`Like enviado com sucesso: ${JSON.stringify(payload)}`);
-                alert("Like registrado com sucesso!");
-            } catch (error) {
-                console.error("Erro ao enviar like:", error);
-                alert("Erro ao registrar o like.");
-            }
+        await axios.post("https://rust-swapp-be-407691885788.us-central1.run.app/match/add_like", payload);
+        console.log(`Like enviado com sucesso: ${JSON.stringify(payload)}`);
+        alert("Like registrado com sucesso!");
+      } catch (error) {
+        console.error("Erro ao enviar like:", error);
+        alert("Erro ao registrar o like.");
+      }
+    },
+    async buscarUsuarioLogado() {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+          console.error("Token não encontrado");
+          return;
         }
+
+        const response = await fetch('http://34.56.213.96:8000/api/users/detail/', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+        this.idUsuarioLogado = data.id; // Obtém o ID do usuário logado
+        console.log("ID do usuário logado:", this.idUsuarioLogado);
+      } catch (error) {
+        console.error("Erro ao buscar usuário logado:", error);
+      }
     },
-    mounted() {
-        this.fetchServices();
-    },
+  },
+  mounted() {
+    this.buscarUsuarioLogado();
+    this.fetchServices();
+  },
 };
 </script>
 
@@ -191,16 +218,21 @@ export default {
 /* 🔹 Grid de Serviços */
 .services-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    padding: 20px;
+    grid-template-columns: repeat(4, 1fr); /* Mantém os 4 cards por linha */
+    gap: 20px; /* Espaçamento entre os cards */
+    padding: 0 50px; /* Adiciona espaçamento lateral */
+    margin: 0 auto; /* Centraliza a grade */
+    max-width: 1200px; /* Limita a largura máxima */
+    box-sizing: border-box;
 }
 
 /* 🔹 Estilo dos cards */
 .service-card {
     background: white;
     border-radius: 10px;
-    padding: 15px;
+    width: 250px;  
+    height: 250px; 
+    padding: 8px; 
     text-align: center;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     position: relative;
@@ -216,7 +248,7 @@ export default {
 
 /* 🔹 Informações do serviço */
 .service-info h2 {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: bold;
 }
 

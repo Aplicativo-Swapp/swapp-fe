@@ -24,68 +24,108 @@
 <script>
 import axios from "axios";
 import CardPage from "@/components/Card.vue";
-import { getLoggedUserId } from "@/utils/auth.js";
-
 
 export default {
-    name: "MinhasCurtidasComponent",
-    components: {
-        CardPage,
+  name: "MinhasCurtidasComponent",
+  components: {
+    CardPage,
+  },
+  data() {
+    return {
+      likedServices: [], // Lista de serviços curtidos
+      selectedService: null, // Serviço selecionado para exibir no popup
+      idUsuarioLogado: null, // ID do usuário logado
+    };
+  },
+  methods: {
+    // Abre o popup para exibir detalhes do serviço
+    openPopup(likedService) {
+      this.selectedService = likedService;
     },
-    data() {
-        return {
-            likedServices: [], // Lista de serviços será preenchida pela API
-            selectedService: null, // Serviço selecionado para exibir no popup
+    // Fecha o popup
+    closePopup() {
+      this.selectedService = null;
+    },
+    // Remove o like de um serviço
+    async removeLike(serviceId) {
+      if (!this.idUsuarioLogado) {
+        alert("Você precisa estar logado para remover curtidas!");
+        return;
+      }
+
+      try {
+        const payload = {
+          id_deu_like: this.idUsuarioLogado,
+          id_liked: serviceId,
         };
+
+        await axios.delete("https://rust-swapp-be-407691885788.us-central1.run.app/match/delete", { data: payload });
+        this.likedServices = this.likedServices.filter(service => service.id_liked !== serviceId);
+        console.log("Like removido com sucesso.");
+        alert("Like removido com sucesso!");
+      } catch (error) {
+        console.error("Erro ao remover curtida:", error);
+        alert("Erro ao remover o like.");
+      } finally {
+        this.closePopup(); // Fecha o popup após a operação
+      }
     },
-    methods: {
-        openPopup(likedService) {
-            this.selectedService = likedService;
-        },
-        closePopup() {
-            this.selectedService = null;
-        },
-        async removeLike(serviceId) {
-            try {
-                const userId = getLoggedUserId(); // Substitua pelo ID real do usuário logado
+    // Busca os serviços curtidos pelo usuário logado
+    async fetchLikedServices() {
+      if (!this.idUsuarioLogado) {
+        alert("Você precisa estar logado para ver seus serviços curtidos.");
+        return;
+      }
 
-                await axios.delete("https://rust-swapp-be-407691885788.us-central1.run.app/match/delete", {
-                    data: {
-                        id_deu_like: userId,
-                        id_liked: serviceId
-                    }
-                });
-
-                this.likedServices = this.likedServices.filter(service => service.id_liked !== serviceId);
-            } catch (error) {
-                console.error("Erro ao remover curtida:", error);
-            } finally {
-                this.closePopup(); // Fecha o popup mesmo se der erro
-            }
-        },
-
-        async fetchLikedServices() {
-            try {
-                const userId = getLoggedUserId(); // Substitua pelo ID real do usuário logado
-                const response = await axios.get(
-                    `https://rust-swapp-be-407691885788.us-central1.run.app/match/buscar_meus_likes/${userId}`
-                );
-
-                this.likedServices = response.data.map(like => ({
-                    id_liked: like[0],
-                    full_name: like[1],
-                    title: like[2],
-                    location: like[3]
-                }));
-            } catch (error) {
-                console.error("Erro ao buscar serviços curtidos:", error);
-            }
+      try {
+        const response = await axios.get(
+          `https://rust-swapp-be-407691885788.us-central1.run.app/match/buscar_meus_likes/${this.idUsuarioLogado}`
+        );
+        console.log("Serviços curtidos recebidos:", response.data);
+        this.likedServices = response.data.map(like => ({
+          id_liked: like[0], // ID do serviço curtido
+          full_name: like[1], // Nome do serviço
+          title: like[2], // Título do serviço
+          location: like[3], // Localização do serviço
+        }));
+        console.log("Serviços curtidos processados:", this.likedServices);
+    } catch (error) {
+        console.error("Erro ao buscar serviços curtidos:", error);
+        alert("Erro ao carregar serviços curtidos.");
+      }
+    },
+    // Obtém o ID do usuário logado
+    async buscarUsuarioLogado() {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+          console.error("Token não encontrado");
+          return;
         }
-    },
 
-    mounted() {
-        this.fetchLikedServices(); // Chama a API ao montar o componente
+        const response = await fetch("http://34.56.213.96:8000/api/users/detail/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+        this.idUsuarioLogado = data.id; // Obtém o ID do usuário logado
+        console.log("ID do usuário logado:", this.idUsuarioLogado);
+
+        // Chama a função para buscar os serviços depois que o ID do usuário foi obtido
+        if (this.idUsuarioLogado) {
+          this.fetchLikedServices();
+        }
+
+      } catch (error) {
+        console.error("Erro ao buscar usuário logado:", error);
+      }
     },
+  },
+  mounted() {
+    this.buscarUsuarioLogado(); // Obtém o ID do usuário logado assim que o componente é montado
+  },
 };
 </script>
 

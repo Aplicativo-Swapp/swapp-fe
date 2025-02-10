@@ -108,6 +108,7 @@ export default {
       },
       categories: [],
       subcategories: [],
+      idUsuarioLogado: null, // Armazenará o ID do usuário logado
     };
   },
   methods: {
@@ -167,10 +168,16 @@ export default {
     },
 
     async submitForm() {
+      // Verifica se o ID do usuário está disponível
+      if (!this.idUsuarioLogado) {
+        alert("Você precisa estar logado para cadastrar uma habilidade.");
+        return;
+      }
+
       const postData = {
         descricao: this.formData.description,
         id_sub_habilidade: this.formData.subcategory,
-        id_users: 3, // Substitua com o ID do usuário autenticado
+        id_users: this.idUsuarioLogado, // Substitui o ID fixo pelo ID do usuário logado
         valor: parseFloat(this.formData.value), // Garante que seja um número
       };
 
@@ -186,8 +193,31 @@ export default {
         alert("Erro ao realizar o cadastro de habilidade. Verifique os dados e tente novamente.");
       }
     },
+
+    async buscarUsuarioLogado() {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+          console.error("Token não encontrado");
+          return;
+        }
+
+        const response = await fetch('http://34.56.213.96:8000/api/users/detail/', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+        this.idUsuarioLogado = data.id; // Obtém o ID do usuário logado
+        console.log("ID do usuário logado:", this.idUsuarioLogado);
+      } catch (error) {
+        console.error("Erro ao buscar usuário logado:", error);
+      }
+    },
   },
   mounted() {
+    this.buscarUsuarioLogado();
     this.fetchHabilidades();
   },
 };

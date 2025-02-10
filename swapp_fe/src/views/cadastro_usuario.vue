@@ -104,7 +104,9 @@ export default {
           state: this.formData.state,
           city: this.formData.city,
         });
+        
         alert("Cadastro realizado com sucesso!");
+        this.$router.push({ name: "HomeLogada" }); // Redireciona para a página principal
         console.log("Resposta da API:", response.data);
         // Redirecione o usuário ou limpe o formulário após o sucesso
       } catch (error) {

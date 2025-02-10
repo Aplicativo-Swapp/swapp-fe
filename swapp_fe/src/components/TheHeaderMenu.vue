@@ -9,7 +9,9 @@
 
     <!-- Logotipo (centro) -->
     <nav>
-      <img src="@/assets/logo2.png" alt="Logo" class="logo" />
+      <router-link to="/">
+        <img src="@/assets/logo2.png" alt="Logo" class="logo" />
+      </router-link>
     </nav>
 
     <!-- Saudação e ícone (direita) -->

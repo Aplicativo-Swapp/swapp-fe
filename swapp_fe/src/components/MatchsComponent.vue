@@ -40,7 +40,7 @@
 
 <script>
 import axios from "axios";
-import { getLoggedUserId, redirectToLogin } from "@/utils/auth.js";
+import { getLoggedUserId, redirectToLogin } from "@/utils/auth";
 
 export default {
   name: "MatchsComponent",

@@ -59,6 +59,8 @@ export default {
               email: this.formData.email,
               password: this.formData.password,
           });
+          
+          console.log("Resposta da API:", response.data); // 🔹 Verifique no console o que a API está retornando!
 
           const { access, refresh, id, message } = response.data; 
           if (access && refresh) {

@@ -1,7 +1,6 @@
 <template>
     <div>
-      <TheHeaderHomeLgd />
-  
+      <TheHeaderMenu />
       <main class="main">
         <div class="categories">
           <div class="category-item">
@@ -115,7 +114,7 @@
             </p>
           </div>
         </div>
-        <a href="/servicos" class="view-more">Ver mais</a>
+        <a href="/match" class="view-more">Ver mais</a>
       </section>
   
       <section class="about-section">
@@ -147,13 +146,13 @@
   
   <script>
   import TheFooter from "@/components/TheFooter.vue";
-  import TheHeaderHomeLgd from "@/components/TheHeaderHomeLgd.vue";
+  import TheHeaderMenu from "@/components/TheHeaderMenu.vue";
   
   export default {
     name: "HomePageLgd",
     components: {
       TheFooter,
-      TheHeaderHomeLgd // Registra o componente TheFooter
+      TheHeaderMenu // Registra o componente TheFooter
     },
     data() {
       return {
@@ -176,36 +175,6 @@
   
   .main{
     background-color: #ffffff;
-  }
-  
-  
-  .header {
-    background-color: #14241f; /* Cor de fundo */
-    display: flex;
-    justify-content: center; /* Centraliza o conteúdo horizontalmente */
-    align-items: center; /* Centraliza verticalmente */
-    height: 120px; /* Define altura fixa */
-    width: 100%; /* Ocupa 100% da largura */
-  }
-  
-  .header-content {
-    display: flex;
-    align-items: center; /* Alinha os itens verticalmente */
-    justify-content: center; /* Centraliza os itens horizontalmente */
-    width: 100%; /* Garante que ocupe toda a largura */
-    position: relative; /* Necessário para ajustar a logo e dropdown */
-  }
-  
-  .logo {
-    position: absolute; /* Remove do fluxo normal */
-    left: 20px; /* Alinha a logo à esquerda */
-    width: 200px;
-    height: auto;
-  }
-  
-  .entrar {
-    width: 40px;
-    height: auto;
   }
   
   .banner {

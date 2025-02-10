@@ -6,7 +6,7 @@
        <div class="chat-container">
          <!-- Sidebar com usuários -->
          <aside class="users-sidebar">
-           <h2>Users</h2>
+           <h2>Usuários</h2>
            <ul>
              <li
                v-for="user in users"
@@ -39,10 +39,10 @@
              <input
                type="text"
                v-model="newMessage"
-               placeholder="Type a message..."
+               placeholder=" Digite uma mensagem"
                @keyup.enter="sendMessage"
              />
-             <button @click="sendMessage">Send</button>
+             <button @click="sendMessage">Enviar</button>
            </footer>
          </section>
         </div>
@@ -153,6 +153,29 @@
        padding: 0;
      }
      
+     .chat-input button {
+    padding: 0.5rem 1.5rem;
+    border: none;
+    background: #76e3c3;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(37, 7, 7, 0.1);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .chat-input button:hover {
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .chat-input button:active {
+    background: #76e3c3;
+    box-shadow: none;
+    transform: translateY(2px);
+  }
+
      .users-sidebar li {
        display: flex;
        align-items: center;
@@ -231,17 +254,5 @@
        border-radius: 5px;
      }
      
-     .chat-input button {
-       padding: 0.5rem 1rem;
-       border: none;
-       background: #007bff;
-       color: white;
-       border-radius: 5px;
-       cursor: pointer;
-     }
-     
-     .chat-input button:hover {
-       background: #0056b3;
-     }
    </style>
      

@@ -32,7 +32,7 @@
 
 <script>
 import axios from "axios";
-import { getLoggedUserId } from '@/utils/auth.js'; // Importa as funções utilitárias
+import { getLoggedUserId,redirectToLogin } from '@/utils/auth'; // Importa as funções utilitárias
 
 
 export default {
@@ -48,9 +48,14 @@ export default {
 
   methods: {
     async fetchLikes() {
+      const userId = getLoggedUserId();
+      if (!userId) {
+        redirectToLogin(this.$router);
+        return;
+      }
       try {
         const response = await axios.get(
-          `https://rust-swapp-be-407691885788.us-central1.run.app/match/buscar_likes/3`
+          `https://rust-swapp-be-407691885788.us-central1.run.app/match/buscar_likes/${userId}`
         );
         this.likes = response.data; // Atualiza os dados da API
       } catch (error) {
