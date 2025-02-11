@@ -15,7 +15,7 @@
               class="habilidade-foto"
             />
             <div class="habilidade-info">
-              <h2>{{ habilidade.titulo }}</h2>
+              <h2>{{ habilidade.descricao }}</h2>
             </div>
             <button class="editar-btn" @click="editarHabilidade(habilidade.id)">
               Editar

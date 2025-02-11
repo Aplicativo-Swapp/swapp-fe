@@ -9,7 +9,7 @@
 
     <!-- Logotipo (centro) -->
     <nav>
-      <router-link to="/">
+      <router-link to="/home">
         <img src="@/assets/logo2.png" alt="Logo" class="logo" />
       </router-link>
     </nav>

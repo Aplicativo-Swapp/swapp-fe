@@ -22,7 +22,7 @@ const routes = [
   { path: '/editar-perfil', component: EditarPerfil, name: 'EditarPerfil' },
   { path: '/habilidades-cadastradas', component: HabilidadesCadastradas, name: 'HabilidadesCadastradas' },
   { path: '/editar-senha', component: EditarSenha, name: 'EditarSenha' },
-  { path: '/editar-habilidade', component: EditarHabilidade, name: 'EditarHabilidade' },
+  { path: '/editar-habilidade/:id', component: EditarHabilidade, name: 'EditarHabilidade' },
   { path: '/editar-senha', component: EditarSenha, name: 'EditarSenha' },
   { path: '/match', component: Match, name: 'Match' },
   { path: '/minha-atividade', component: MinhaAtividade, name: 'MinhaAtividade' },

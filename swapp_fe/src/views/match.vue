@@ -1,6 +1,6 @@
 <template>
     <div class="match-page">
-        <TheHeaderMenu />
+        <TheHeader />
         <h1 class="page-title">DÊ MATCH DE SERVIÇOS</h1>
 
         <!-- 🔹 Container para os filtros -->
@@ -53,12 +53,12 @@
 <script>
 import axios from "axios";
 import TheFooter from "@/components/TheFooter.vue";
-import TheHeaderMenu from "@/components/TheHeaderMenu.vue";
+import TheHeader from "@/components/TheHeaderLogo.vue";
 
 export default {
   name: "MatchPage",
   components: {
-    TheHeaderMenu,
+    TheHeader,
     TheFooter,
   },
   data() {
