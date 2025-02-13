@@ -47,28 +47,6 @@
           </div>
         </div>
 
-        <!-- Campo de Localização -->
-        <div class="form-group">
-          <div class="text-box">
-            <input type="text" v-model="formData.localization" :disabled="!editableFields.localization"
-              placeholder="Localização" required />
-            <button type="button" class="edit-button" :data-field="'localization'" @click="enableEdit('localization')">
-              Editar
-            </button>
-          </div>
-        </div>
-
-        <!-- Campo de Título -->
-        <div class="form-group">
-          <div class="text-box">
-            <input type="text" v-model="formData.title" :disabled="!editableFields.title"
-              placeholder="Título. Ex: corte de cabelo" required />
-            <button type="button" class="edit-button" :data-field="'title'" @click="enableEdit('title')">
-              Editar
-            </button>
-          </div>
-        </div>
-
         <!-- Campo de Descrição -->
         <div class="form-group">
           <div class="text-box description-box-container">
@@ -142,112 +120,120 @@ export default {
       },
       categories: [],
       subcategories: [],
+      idUsuarioLogado: null,
+      isInitialLoad: true, // Indica se estamos carregando os dados pela primeira vez
+      formattedValue: "", // Armazena o valor formatado para exibição
     };
   },
+
   methods: {
-    // Carrega as categorias disponíveis
+    // Busca os dados do usuário logado (incluindo seu ID)
+    async buscarUsuarioLogado() {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+          console.error("Token não encontrado");
+          return;
+        }
+        const response = await fetch('http://34.56.213.96:8000/api/users/detail/', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        this.idUsuarioLogado = data.id;
+        console.log("ID do usuário logado:", this.idUsuarioLogado);
+      } catch (error) {
+        console.error("Erro ao buscar usuário logado:", error);
+      }
+    },
+    // Carrega todas as categorias disponíveis
     async fetchHabilidades() {
       try {
         const response = await axios.get("https://rust-swapp-be-407691885788.us-central1.run.app/habilidades");
+        console.log("lista habilidades", response.data);
         this.categories = response.data;
       } catch (error) {
         console.error("Erro ao buscar categorias:", error);
       }
     },
-
+    // Busca as subcategorias com base na categoria selecionada
     async fetchSubHabilidades() {
-      this.formData.subcategoryId = ""; // Reseta a subcategoria ao mudar a categoria
-      this.subcategories = []; // Limpa as subcategorias antes de buscar novas
-
-      if (!this.formData.categoryId) return; // Evita requisição sem categoria válida
-
+      if (!this.formData.categoryId) return;
       try {
         const response = await axios.get(
           `https://rust-swapp-be-407691885788.us-central1.run.app/sub_habilidade_habilidade/${this.formData.categoryId}`
         );
-
         console.log("Resposta da API para subcategorias:", response.data);
-
         if (Array.isArray(response.data)) {
           this.subcategories = response.data;
         } else {
           console.error("Formato inesperado para subcategorias:", response.data);
         }
+        // Só limpa o campo se a categoria foi manualmente alterada
+        if (!this.isInitialLoad) {
+          this.formData.subcategoryId = "";
+        }
       } catch (error) {
         console.error("Erro ao buscar sub habilidades:", error);
       }
     },
-
-    async loadSkill(skillId) {
+    // Carrega os dados da habilidade do usuário e popula o formulário
+    async loadSkill(userID) {
       try {
         const response = await axios.get(
-          `https://rust-swapp-be-407691885788.us-central1.run.app/habilidades/${skillId}`
+          `https://rust-swapp-be-407691885788.us-central1.run.app/obter/${userID}`
         );
-
-        const skillData = response.data;
-        this.formData = {
-          categoryId: skillData.id_categoria || "",
-          subcategoryId: skillData.id_sub_habilidade || "",
-          localization: skillData.localizacao || "",
-          title: skillData.titulo || "",
-          description: skillData.descricao || "",
-          value: skillData.valor ? parseFloat(skillData.valor).toFixed(2) : "",
-          photos: skillData.fotos || [],
-        };
-
-        await this.fetchSubHabilidades(); // Carrega as subcategorias corretamente
+        const data = response.data;
+        // Se não houver habilidade cadastrada, redireciona para inserir
+        if (!Array.isArray(data) || data.length === 0) {
+          alert("Nenhuma habilidade encontrada. Você será redirecionado para a tela de inserção.");
+          this.$router.push({ name: "InserirHabilidade" });
+          return;
+        }
+        const skillData = data[0];
+        const parentResponse = await axios.get(
+          `https://rust-swapp-be-407691885788.us-central1.run.app/habilidade_sub_habilidade/${skillData.id_sub_habilidade}`
+        );
+        if (parentResponse.data && parentResponse.data.length > 0) {
+          const parent = parentResponse.data[0];
+          // Converte o valor da API para float e formata como moeda
+          const valorFloat = parseFloat(skillData.valor);
+          this.formData = {
+            categoryId: parent.id,
+            subcategoryId: skillData.id_sub_habilidade,
+            description: skillData.descricao,
+            value: valorFloat.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            }),
+            localization: "",
+            title: "",
+            photos: [],
+          };
+          console.log(this.formData);
+          await this.fetchSubHabilidades();
+          // Define que a primeira carga foi concluída
+          this.isInitialLoad = false;
+        } else {
+          console.error("Não foi possível obter a habilidade associada à sub-habilidade.");
+        }
       } catch (error) {
         console.error("Erro ao carregar habilidade:", error);
       }
     },
-
-    // Habilita a edição de um campo
-    enableEdit(field) {
-      this.editableFields[field] = true;
-    },
-
-
-    formatCurrency(event) {
-      let value = event.target.value.replace(/\D/g, ""); // Remove tudo que não for número
-      let floatValue = parseFloat(value) / 100; // Converte para decimal
-
-      // Atualiza o modelo de dados com um número puro (sem formatação)
-      this.formData.value = floatValue;
-
-      // Exibe o valor formatado no input
-      event.target.value = floatValue.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      });
-    },
-
-    // Manipula o upload de fotos
-    handleFileUpload(event) {
-      const files = event.target.files;
-      this.formData.photos = [...this.formData.photos, ...Array.from(files)];
-    },
-
-    // Remove uma foto
-    removePhoto(index) {
-      this.formData.photos.splice(index, 1);
-    },
-
-    // Gera a pré-visualização das fotos
-    getPhotoPreview(file) {
-      return URL.createObjectURL(file);
-    },
-
+    // Envia os dados atualizados para a API
     async submitForm() {
       const postData = {
         descricao: this.formData.description,
         id_sub_habilidade: this.formData.subcategoryId,
-        id_users: 3, // Substitua com o ID real do usuário autenticado
-        valor: parseFloat(this.formData.value) || 0, // Garante um número válido
+        id_users: this.idUsuarioLogado, // ID do usuário logado
+        // Converte o valor formatado (moeda) para float antes de enviar
+        valor: this.getFloatFromCurrency(this.formData.value) || 0,
       };
-
       try {
-        const response = await axios.post(
-          "https://rust-swapp-be-407691885788.us-central1.run.app/editar",
+        const response = await axios.put(
+          "https://rust-swapp-be-407691885788.us-central1.run.app/atualizar",
           postData
         );
         alert("Habilidade editada com sucesso!");
@@ -257,16 +243,54 @@ export default {
         alert("Erro ao editar a habilidade. Verifique os dados e tente novamente.");
       }
     },
+    // Habilita a edição de um campo específico
+    enableEdit(field) {
+      this.editableFields[field] = true;
+    },
+    formatCurrency(event) {
+      // Remove caracteres que não são números
+      let value = event.target.value.replace(/\D/g, "");
+      // Converte para formato de moeda brasileiro
+      value = (value / 100).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      });
+      // Atualiza o modelo de dados
+      this.formData.value = value;
+    },
+    // Função auxiliar para converter um valor formatado em moeda para float
+    getFloatFromCurrency(value) {
+      if (!value) return 0;
+      return parseFloat(value.replace(/[^0-9,]/g, "").replace(",", "."));
+    },
+    // Manipula o upload de fotos
+    handleFileUpload(event) {
+      const files = event.target.files;
+      this.formData.photos = [...this.formData.photos, ...Array.from(files)];
+    },
+    // Remove uma foto da lista
+    removePhoto(index) {
+      this.formData.photos.splice(index, 1);
+    },
+    // Gera a pré-visualização das fotos
+    getPhotoPreview(file) {
+      return URL.createObjectURL(file);
+    },
   },
-  mounted() {
-    this.fetchHabilidades(); // Carrega as categorias ao montar o componente
-    const skillId = this.$route.params.skillId;
-    if (skillId) {
-      this.loadSkill(skillId); // Carrega os dados da habilidade a ser editada
+  async mounted() {
+    // Primeiro, busca o ID do usuário logado
+    await this.buscarUsuarioLogado();
+    // Em seguida, carrega as categorias para o select
+    this.fetchHabilidades();
+    // Se o ID do usuário foi obtido, carrega os dados da habilidade
+    if (this.idUsuarioLogado) {
+      this.loadSkill(this.idUsuarioLogado);
     }
   },
 };
 </script>
+
+
 
 <style scoped>
 body {

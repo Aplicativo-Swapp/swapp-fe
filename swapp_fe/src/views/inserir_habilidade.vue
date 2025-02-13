@@ -5,7 +5,6 @@
       <div class="form-container">
         <h2>Anuncie uma Habilidade</h2>
         <form @submit.prevent="submitForm">
-
           <!-- Select de Categorias -->
           <div class="select">
             <select v-model="formData.category" @change="fetchSubHabilidades" required class="select-category">
@@ -28,15 +27,7 @@
 
           <!-- Restante do formulário -->
           <div class="form-group">
-            <input type="text" v-model="formData.value" placeholder="Valor Estimado (R$)" @input="formatCurrency" class="text-box" />
-
-
-          </div>
-          <div class="form-group">
-            <input type="text" v-model="formData.localization" placeholder="Localização" required class="text-box" />
-          </div>
-          <div class="form-group">
-            <input type="text" v-model="formData.title" placeholder="Título. Ex: corte de cabelo" required
+            <input type="text" v-model="formData.value" placeholder="Valor Estimado (R$)" @input="formatCurrency"
               class="text-box" />
           </div>
           <div class="form-group">
@@ -103,7 +94,7 @@ export default {
         localization: "",
         title: "",
         description: "",
-        valor: "", // Valor estimado no formato moeda
+        value: "", // Valor estimado no formato moeda
         photos: [], // Armazenará os arquivos de imagem, mas não serão enviadas
       },
       categories: [],
@@ -125,18 +116,18 @@ export default {
       this.formData.subcategory = ""; // Reseta a subcategoria ao mudar a categoria
       this.subcategories = []; // Limpa as subcategorias antes de buscar novas
 
-      // Verifica se o ID da categoria foi selecionado
       console.log("ID da categoria selecionada:", this.formData.category);
 
       if (!this.formData.category) return;
 
       try {
-        const response = await axios.get(`https://rust-swapp-be-407691885788.us-central1.run.app/sub_habilidade_habilidade/${this.formData.category}`);
+        const response = await axios.get(
+          `https://rust-swapp-be-407691885788.us-central1.run.app/sub_habilidade_habilidade/${this.formData.category}`
+        );
         console.log("Resposta da API para subcategorias:", response.data);
 
-        // Verifique se a resposta contém uma lista de subcategorias
         if (Array.isArray(response.data)) {
-          this.subcategories = response.data; // Atualiza subcategorias com a resposta correta
+          this.subcategories = response.data;
         } else {
           console.error("Formato inesperado para subcategorias:", response.data);
         }
@@ -152,23 +143,26 @@ export default {
     getPhotoPreview(file) {
       return URL.createObjectURL(file); // Cria uma URL local para pré-visualizar as imagens
     },
-
     formatCurrency(event) {
-      let value = event.target.value.replace(/\D/g, ""); // Remove tudo que não for número
-      let floatValue = parseFloat(value) / 100; // Converte para decimal
+      // Remove caracteres que não são números
+      let value = event.target.value.replace(/\D/g, "");
 
-      // Atualiza o modelo de dados com um número puro (sem formatação)
-      this.formData.value = floatValue;
-
-      // Exibe o valor formatado no input
-      event.target.value = floatValue.toLocaleString("pt-BR", {
+      // Converte para formato de moeda brasileiro
+      value = (value / 100).toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL",
       });
-    },
 
+      // Atualiza o modelo de dados
+      this.formData.value = value;
+    },
+    // Função auxiliar para converter um valor formatado em moeda para float
+    getFloatFromCurrency(value) {
+      if (!value) return 0;
+      return parseFloat(value.replace(/[^0-9,]/g, "").replace(",", "."));
+    },
     async submitForm() {
-      // Verifica se o ID do usuário está disponível
+      // Se o usuário não tiver sido redirecionado por já possuir uma habilidade, prossegue com a inserção
       if (!this.idUsuarioLogado) {
         alert("Você precisa estar logado para cadastrar uma habilidade.");
         return;
@@ -177,8 +171,8 @@ export default {
       const postData = {
         descricao: this.formData.description,
         id_sub_habilidade: this.formData.subcategory,
-        id_users: this.idUsuarioLogado, // Substitui o ID fixo pelo ID do usuário logado
-        valor: parseFloat(this.formData.value), // Garante que seja um número
+        id_users: this.idUsuarioLogado,
+        valor: this.getFloatFromCurrency(this.formData.value) || 0,
       };
 
       try {
@@ -193,7 +187,6 @@ export default {
         alert("Erro ao realizar o cadastro de habilidade. Verifique os dados e tente novamente.");
       }
     },
-
     async buscarUsuarioLogado() {
       try {
         const token = localStorage.getItem("authToken");
@@ -202,7 +195,7 @@ export default {
           return;
         }
 
-        const response = await fetch('http://34.56.213.96:8000/api/users/detail/', {
+        const response = await fetch("http://34.56.213.96:8000/api/users/detail/", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -215,13 +208,30 @@ export default {
         console.error("Erro ao buscar usuário logado:", error);
       }
     },
+    async checkExistingSkill() {
+      try {
+        const response = await axios.get(
+          `https://rust-swapp-be-407691885788.us-central1.run.app/obter/${this.idUsuarioLogado}`
+        );
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          alert("Você já possui uma habilidade cadastrada. Você será redirecionado para a página de edição.");
+          this.$router.push({ name: "EditarHabilidade" });
+        }
+      } catch (error) {
+        console.error("Erro ao verificar habilidade existente:", error);
+      }
+    },
   },
-  mounted() {
-    this.buscarUsuarioLogado();
+  async mounted() {
+    await this.buscarUsuarioLogado();
+    if (this.idUsuarioLogado) {
+      await this.checkExistingSkill();
+    }
     this.fetchHabilidades();
   },
 };
 </script>
+
 
 <style scoped>
 body {

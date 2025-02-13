@@ -88,22 +88,18 @@ export default {
         const response = await axios.get(
           `https://rust-swapp-be-407691885788.us-central1.run.app/match/${this.userId}`
         );
-        
+
         console.log("Resposta da API de matches:", response.data);
-        
-        this.matches = response.data.map(match => ({
-          id: match[0],
-          them: match[1],
-          theirSkill: match[2],
-          yourSkill: match[5],
-          them_id: match[3],
-          userImage: "https://via.placeholder.com/50",
+
+        this.matches = response.data.map(matchId => ({
+          id: matchId,
         }));
+
       } catch (error) {
         console.error("Erro ao buscar matches:", error);
       }
     },
-
+    
     async dislikeAction(matchId, likedUserId) {
       if (!this.userId) {
         console.error("ID do usuário logado não encontrado.");
@@ -132,7 +128,7 @@ export default {
       console.log(`Abrindo chat para o match com ID: ${matchId}`);
     },
   },
-  
+
   mounted() {
     this.fetchLoggedUser();
   },
