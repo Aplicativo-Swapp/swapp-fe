@@ -77,9 +77,7 @@ export default {
         return;
       }
       try {
-        const response = await axios.get(`${this.API_URL}/get_chat_history`, {
-          params: { user1: this.currentUser.id, user2: this.otherUser.id },
-        });
+        const response = await axios.get(`https://chat-swapp-2-407691885788.us-central1.run.app/get_chat_history?user1=id${this.currentUser.id}&user2=id${this.otherUser.id}`);
         this.messages = response.data;
         console.log("Histórico de chat recebido:", this.messages);
         this.scrollToBottom();
@@ -95,7 +93,7 @@ export default {
       try {
         const res = await axios.post(
           `${this.API_URL}/send_message`,
-          { sender_id: this.currentUser.id, receiver_id: this.otherUser.id, message: message },
+          { sender_id: `id${this.currentUser.id}`, receiver_id: `id${this.otherUser.id}`, message: message },
           { headers: { "Content-Type": "application/json" } }
         );
         console.log("Resposta do send_message:", res.data);
