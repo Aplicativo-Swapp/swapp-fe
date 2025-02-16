@@ -14,11 +14,12 @@
           v-for="(msg, index) in messages"
           :key="index"
           :class="{
-            'message-sent': msg.sender === currentUser.id,
-            'message-received': msg.sender === otherUser.id
+            'message-sent': msg.sender === `id${currentUser.id}`,
+            'message-received': msg.sender === `id${otherUser.id}`
           }"
         >
           <div class="message-info">
+            <!-- Exibe o nome do remetente conforme o id -->
             <strong>{{ getSenderName(msg.sender) }}</strong>
           </div>
           <div class="message-text">
@@ -28,7 +29,12 @@
         </div>
       </div>
       <div class="chat-input">
-        <input type="text" v-model="newMessage" placeholder="Digite sua mensagem..." @keypress.enter="sendMessage" />
+        <input
+          type="text"
+          v-model="newMessage"
+          placeholder="Digite sua mensagem..."
+          @keypress.enter="sendMessage"
+        />
         <button @click="sendMessage">Enviar</button>
       </div>
     </div>
@@ -59,9 +65,12 @@ export default {
           console.error("Token não encontrado");
           return;
         }
-        const response = await fetch("http://34.56.213.96:8000/api/users/detail/", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await fetch(
+          "http://34.56.213.96:8000/api/users/detail/",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         const data = await response.json();
         this.currentUser.id = data.id;
         this.currentUser.name = data.first_name;
@@ -71,13 +80,39 @@ export default {
       }
     },
 
+    buscarOutroUsuario() {
+      // Faz a requisição para buscar os dados do outro usuário
+      axios.get(`https://rust-swapp-be-407691885788.us-central1.run.app/obter/${this.otherUser.id}`)
+        .then((response) => {
+          // Supondo que a API retorne um array de dados
+          if (response.data && response.data.length > 0) {
+            const userData = response.data[0];
+            // Você pode combinar first_name e last_name, se desejar
+            this.otherUser.name = userData.first_name;
+            console.log("dados dele:", userData);
+          } else {
+            console.error("Nenhum dado retornado para o outro usuário.");
+          }
+        })
+        .catch((error) => {
+          console.error("Erro ao buscar dados do outro usuário:", error);
+        });
+    },
+
     async updateChat() {
       if (!this.currentUser.id || !this.otherUser.id) {
-        console.log("IDs de usuário não definidos. currentUser:", this.currentUser, "otherUser:", this.otherUser);
+        console.log(
+          "IDs de usuário não definidos. currentUser:",
+          this.currentUser,
+          "otherUser:",
+          this.otherUser
+        );
         return;
       }
       try {
-        const response = await axios.get(`https://chat-swapp-2-407691885788.us-central1.run.app/get_chat_history?user1=id${this.currentUser.id}&user2=id${this.otherUser.id}`);
+        const response = await axios.get(
+          `https://chat-swapp-2-407691885788.us-central1.run.app/get_chat_history?user1=id${this.currentUser.id}&user2=id${this.otherUser.id}`
+        );
         this.messages = response.data;
         console.log("Histórico de chat recebido:", this.messages);
         this.scrollToBottom();
@@ -88,12 +123,23 @@ export default {
 
     async sendMessage() {
       const message = this.newMessage.trim();
-      console.log("Tentando enviar mensagem. Eu:", this.currentUser.id, ", Ele:", this.otherUser.id, ", Mensagem:", message);
+      console.log(
+        "Tentando enviar mensagem. Eu:",
+        this.currentUser.id,
+        ", Ele:",
+        this.otherUser.id,
+        ", Mensagem:",
+        message
+      );
       if (!message) return;
       try {
         const res = await axios.post(
           `${this.API_URL}/send_message`,
-          { sender_id: `id${this.currentUser.id}`, receiver_id: `id${this.otherUser.id}`, message: message },
+          {
+            sender_id: `id${this.currentUser.id}`,
+            receiver_id: `id${this.otherUser.id}`,
+            message: message,
+          },
           { headers: { "Content-Type": "application/json" } }
         );
         console.log("Resposta do send_message:", res.data);
@@ -116,8 +162,9 @@ export default {
     },
 
     getSenderName(senderId) {
-      if (senderId === this.currentUser.id) return this.currentUser.name;
-      if (senderId === this.otherUser.id) return this.otherUser.name;
+      // Compara considerando o formato "id{numero}"
+      if (senderId === `id${this.currentUser.id}`) return this.currentUser.name;
+      if (senderId === `id${this.otherUser.id}`) return this.otherUser.name;
       return senderId;
     },
   },
@@ -126,9 +173,10 @@ export default {
     // Define o id do outro usuário a partir da rota
     this.otherUser.id = this.$route.params.matchId;
     console.log("ID do outro usuário:", this.otherUser.id);
-    // Opcional: aqui você pode buscar o nome do outro usuário, se houver um endpoint para isso.
+    // Busca os dados do outro usuário (nome, etc.)
+    this.buscarOutroUsuario();
     this.updateChat();
-    // Tente aumentar o intervalo para testar, ex.: 3000ms
+    // Atualiza o chat periodicamente (ex: a cada 3 segundos)
     setInterval(this.updateChat, 3000);
   },
 };
@@ -142,10 +190,12 @@ export default {
   border-radius: 8px;
   padding: 20px;
 }
+
 .chat-header {
   text-align: center;
   margin-bottom: 15px;
 }
+
 .chat-messages {
   height: 400px;
   overflow-y: auto;
@@ -154,6 +204,7 @@ export default {
   margin-bottom: 15px;
   border-radius: 4px;
 }
+
 .message-sent,
 .message-received {
   margin-bottom: 15px;
@@ -162,37 +213,45 @@ export default {
   max-width: 70%;
   position: relative;
 }
+
 .message-sent {
-  background-color: #e3f2fd;
+  background-color: #6cffb5;
   margin-left: auto;
   text-align: right;
 }
+
 .message-received {
-  background-color: #f8f9fa;
+  background-color: #d9d9d9;
   margin-right: auto;
   text-align: left;
 }
+
 .message-info {
   font-size: 0.9em;
   margin-bottom: 4px;
 }
+
 .message-text {
   font-size: 1em;
 }
+
 .timestamp {
   font-size: 0.8em;
   color: #666;
   margin-top: 4px;
 }
+
 .chat-input {
   display: flex;
   justify-content: space-between;
 }
+
 .chat-input input {
   width: 80%;
   padding: 8px;
   margin-right: 5px;
 }
+
 .chat-input button {
   padding: 8px 15px;
   background-color: #007bff;
@@ -201,6 +260,7 @@ export default {
   border-radius: 4px;
   cursor: pointer;
 }
+
 .no-messages {
   text-align: center;
   color: #999;

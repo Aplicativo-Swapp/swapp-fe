@@ -1,51 +1,74 @@
 <template>
   <div class="curtidas-recebidas">
-    <main class="likes-grid">
-      <!-- Exibe mensagem quando não há curtidas -->
-      <div v-if="likes.length === 0">
-        <p>Nenhuma curtida encontrada.</p>
-      </div>
-
-      <!-- Exibe as curtidas -->
-      <div class="like-card" v-else v-for="like in likes" :key="like[0]">
-        <h4>
-          <strong>{{ like[1] }}</strong> curtiu seu serviço!
-        </h4>
-        <p>Localização: {{ like[3] }}</p>
-        <div class="user-services">
-          <h4>Serviços oferecidos:</h4>
-          <ul>
-            <li>
-              {{ like[2] }}
-            </li>
-          </ul>
+    <h2>Curtidas Recebidas</h2>
+    <div v-if="likes.length === 0">
+      <p>Nenhuma curtida encontrada.</p>
+    </div>
+    <div class="services-list" v-else>
+      <div
+        class="service-card"
+        v-for="like in likes"
+        :key="like[0]"
+        @click="openPopup(like)"
+      >
+        <div class="service-info">
+          <h4>
+            <strong>{{ like[1] }}</strong> curtiu seu serviço!
+          </h4>
+          <h2>{{ like[2] }}</h2>
+          <h4>Localização: {{ like[3] }}</h4>
         </div>
-
-        <!-- 🔹 Botão para criar match -->
-        <button @click="createMatch(like)" class="btn-match">
-          Dar Match 🤝
-        </button>
       </div>
-    </main>
+    </div>
+
+    <!-- Popup para criação do match -->
+    <CardPage
+      v-if="selectedLike"
+      :service="formattedSelectedLike"
+      actionType="match"
+      @close="closePopup"
+      @match="createMatchFromPopup"
+    />
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import {redirectToLogin } from "@/utils/auth"; // Importa funções utilitárias
+import { redirectToLogin } from "@/utils/auth";
+import CardPage from "@/components/Card.vue";
 
 export default {
   name: "LikesPage",
-
+  components: { CardPage },
   data() {
     return {
-      likes: [], // Lista de curtidas recebidas
-      isLoading: true, // Controle de carregamento
+      likes: [], // Array com as curtidas recebidas (cada item é um array: [id, nome, título, localização, (opcional) imagem])
+      isLoading: true,
       userId: null, // ID do usuário logado
+      selectedLike: null, // Curtida selecionada para exibir no popup
     };
   },
-
+  computed: {
+    // Formata os dados da curtida para o formato esperado pelo CardPage
+    formattedSelectedLike() {
+      if (!this.selectedLike) return null;
+      return {
+        id_liked: this.selectedLike[0],
+        full_name: this.selectedLike[1],
+        title: this.selectedLike[2],
+        location: this.selectedLike[3],
+        image: this.selectedLike[4] || require("@/assets/default-user.png"),
+        description: `Serviços oferecidos: ${this.selectedLike[2]}`,
+      };
+    },
+  },
   methods: {
+    openPopup(like) {
+      this.selectedLike = like;
+    },
+    closePopup() {
+      this.selectedLike = null;
+    },
     async fetchLoggedUser() {
       try {
         const token = localStorage.getItem("authToken");
@@ -54,40 +77,32 @@ export default {
           redirectToLogin(this.$router);
           return;
         }
-
         const response = await fetch("http://34.56.213.96:8000/api/users/detail/", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
         const data = await response.json();
-        this.userId = data.id; // Define o ID do usuário logado
+        this.userId = data.id;
         console.log("ID do usuário logado:", this.userId);
-
         if (this.userId) {
-          this.fetchLikes(); // Chama a função para buscar curtidas após obter o ID
+          this.fetchLikes();
         }
       } catch (error) {
         console.error("Erro ao buscar usuário logado:", error);
       }
     },
-
     async fetchLikes() {
       if (!this.userId) {
         console.error("ID do usuário logado não encontrado.");
         return;
       }
-
       try {
         const response = await axios.get(
           `https://rust-swapp-be-407691885788.us-central1.run.app/match/buscar_likes/${this.userId}`
         );
-
-        console.log("Resposta da API:", response.data); // Verifique o que está vindo da API
-
-        // Atribui diretamente os dados, sem filtrar
-        this.likes = Array.isArray(response.data) ? response.data : []; 
+        console.log("Resposta da API:", response.data);
+        this.likes = Array.isArray(response.data) ? response.data : [];
         console.log("Curtidas recebidas:", this.likes);
       } catch (error) {
         console.error("Erro ao buscar curtidas:", error.response || error.message);
@@ -95,31 +110,30 @@ export default {
         this.isLoading = false;
       }
     },
-
-    async createMatch(like) {
+    async createMatchFromPopup(id_liked) {
+      // id_liked: ID do usuário que curtiu seu serviço
       try {
         const payload = {
-          id_deu_like: like[0], // Quem deu o like
-          id_liked: this.userId, // Quem recebeu o like (usuário logado)
+          id_deu_like: id_liked,
+          id_liked: this.userId,
         };
-
         console.log("Payload:", payload);
-
         await axios.put(
           "https://rust-swapp-be-407691885788.us-central1.run.app/match",
           payload
         );
-
         alert("Match criado com sucesso! 🎉");
+        // Opcional: remova a curtida da lista
+        this.likes = this.likes.filter((like) => like[0] !== id_liked);
+        this.closePopup();
       } catch (error) {
         console.error("Erro ao criar match:", error);
         alert("Erro ao criar match.");
       }
     },
   },
-
   mounted() {
-    this.fetchLoggedUser(); // Obtém o ID do usuário logado antes de buscar curtidas
+    this.fetchLoggedUser();
   },
 };
 </script>
@@ -130,59 +144,35 @@ export default {
   padding: 20px;
 }
 
-.likes-grid {
+.services-list {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 20px;
-  justify-content: center;
+  margin-top: 20px;
 }
 
-.like-card {
-  border: 0.5px solid #ccc;
-  border-radius: 15px;
-  padding: 15px 20px;
+.service-card {
   width: 300px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
   text-align: left;
+  background-color: white;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.like-card:hover {
+.service-card:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.user-services {
-  margin-top: 10px;
+.service-info h2 {
+  margin: 10px 0;
 }
 
-.user-services ul {
-  padding: 0;
-  list-style: none;
-}
-
-.user-services li {
-  background-color: #f9f9f9;
-  margin-bottom: 5px;
-  padding: 5px 10px;
-  border-radius: 4px;
-}
-
-/* 🔹 Estilização do botão de match */
-.btn-match {
-  background-color: #00c896;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 10px;
-  transition: background 0.3s ease;
-}
-
-.btn-match:hover {
-  background-color: #008f6b;
+.service-info h4 {
+  margin: 5px 0;
 }
 </style>

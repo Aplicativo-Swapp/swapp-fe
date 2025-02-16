@@ -1,66 +1,60 @@
 <template>
     <div class="popup-overlay" @click.self="closePopup">
-        <div class="popup-content">
-
-            <!-- Card para Match -->
-            <div v-if="service">
-                <div v-if="actionType === 'close'">
-                    <img :src="service.image" alt="Imagem do serviço" class="service-image" />
-                    <div class="service-info">
-                        <h2>{{ service.title }}</h2>
-                        <div class="texto">
-                            <p>Localização: {{ service.location }}</p>
-                            <p>{{ service.description }}</p>
-                        </div>
-                    </div>
-                    <button class="btn-close" @click="closePopup">Fechar</button>
-                </div>
-
-                <!-- Card para Minhas curtidas -->
-                <div v-if="actionType === 'remove'">
-                    <img :src="service.image" alt="Imagem do serviço" class="service-image" />
-                    <div class="service-info">
-                        <h4>Você curtiu o serviço de {{ service.full_name }}</h4>
-                        <h2>{{ service.title }}</h2>
-                        <h4>Localização: {{ service.location }}</h4>
-                    </div>
-                    <button class="btn-remove" @click="removeLike">Remover Curtida</button>
-                </div>
-            </div>
-            <div v-else>
-                <p>Serviço não encontrado.</p>
-            </div>
+      <div class="popup-content match-card">
+        <div v-if="service">
+          <div class="card-header">
+            <img
+              :src="service.image"
+              alt="Foto do usuário"
+              class="user-photo-small"
+            />
+            <h4>{{ service.full_name || service.title }}</h4>
+          </div>
+          <div class="card-body">
+            <p><strong>Localização:</strong> {{ service.location }}</p>
+            <p>{{ service.description }}</p>
+          </div>
+          <div class="card-actions">
+            <template v-if="actionType === 'match'">
+              <button class="btn-match" @click="matchAction">Dar Match 🤝</button>
+            </template>
+            <!-- Outras ações podem ser adicionadas aqui conforme necessário -->
+          </div>
+          <button class="btn-close" @click="closePopup">×</button>
         </div>
+        <div v-else>
+          <p>Serviço não encontrado.</p>
+        </div>
+      </div>
     </div>
-</template>
-
-<script>
-export default {
+  </template>
+  
+  <script>
+  export default {
     name: "CardPage",
     props: {
-        service: {
-            type: Object,
-            required: true,
-        },
-        actionType: {
-            type: String,
-            default: "close",
-        },
+      service: {
+        type: Object,
+        required: true,
+      },
+      actionType: {
+        type: String,
+        default: "close",
+      },
     },
     methods: {
-        closePopup() {
-            this.$emit("close");
-        },
-        removeLike() {
-            this.$emit("remove", this.service.id_liked);
-        }
-    }
-
-};
-</script>
-
-<style scoped>
-.popup-overlay {
+      closePopup() {
+        this.$emit("close");
+      },
+      matchAction() {
+        this.$emit("match", this.service.id_liked);
+      },
+    },
+  };
+  </script>
+  
+  <style scoped>
+  .popup-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -71,72 +65,70 @@ export default {
     justify-content: center;
     align-items: center;
     z-index: 1000;
-}
-
-.popup-content {
+  }
+  
+  .popup-content {
     background: white;
     padding: 20px;
     border-radius: 10px;
-    width: 80%;
+    width: 90%;
     max-width: 400px;
-    text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.service-image {
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-    margin-bottom: 10px;
-}
-
-.service-info {
+    position: relative;
+  }
+  
+  .match-card {
     text-align: left;
-}
-
-.texto {
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-.btn-close {
-    margin-top: 10px;
-    padding: 10px 20px;
-    border: none;
-    background: #333;
+  }
+  
+  .card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .user-photo-small {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+  }
+  
+  .card-body {
+    margin-bottom: 20px;
+  }
+  
+  .card-actions {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  
+  .btn-match {
+    background-color: #00c896;
     color: white;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.btn-close:hover {
-    background: #555;
-}
-
-.btn-close {
-    margin-top: 10px;
-    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 15px;
     border: none;
-    background: #333;
-    color: white;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-}
-
-.btn-close:hover {
-    background: #555;
-}
-
-.btn-remove {
-    margin-top: 10px;
-    padding: 10px 20px;
+    transition: background 0.3s ease;
+  }
+  
+  .btn-match:hover {
+    background-color: #008f6b;
+  }
+  
+  .btn-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
     border: none;
-    background: #e53935;
-    color: white;
-    border-radius: 5px;
+    font-size: 24px;
     cursor: pointer;
-}
-
-.btn-remove:hover {
-    background: #c62828;
-}
-</style>
+  }
+  </style>
+  
