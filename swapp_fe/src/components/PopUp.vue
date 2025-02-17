@@ -13,6 +13,7 @@
         <li @click="navegar('/editar-perfil')">Editar Perfil</li>
         <li @click="navegar('/editar-senha')">Editar Senha</li>
         <li @click="navegar('/habilidades-cadastradas')">Minha Habilidade</li>
+        <li @click="navegar('/match')">Página de serviços</li>
         
         <li @click="toggleSubmenu" class="submenu-trigger">
           Minha Atividade
@@ -48,6 +49,7 @@ export default {
     },
     logout() {
       alert("Você saiu!");
+      this.$router.push('/');
       this.closePopup();
     },
     toggleSubmenu() {

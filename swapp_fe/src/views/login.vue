@@ -15,6 +15,9 @@
         <div class="form-group">
           <input type="password" v-model="formData.password" placeholder="Senha" required />
         </div>
+        <div class="senha-container">
+          <a href="\editar-senha" class="senha-link">Esqueci minha senha</a>
+        </div>
         <button type="submit">Entrar</button>
         <p class="signup-link">
            Ainda não tem conta? <a href="\cadastro">Cadastre-se</a>
@@ -30,8 +33,6 @@
 <script>
 import axios from "axios";
 import TheHeader from "@/components/TheHeaderLogo.vue";
-
-
 
 export default {
     name: "LoginPage",
@@ -153,6 +154,22 @@ input[type="email"] {
   border: none;
   background-color: #d9d9d9;
 }
+
+.senha-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -10px;
+  margin-bottom: 15px;
+  padding-right: 45px;
+}
+
+.senha-link {
+  font-size: 12px;
+  color: #6a0dad;
+  text-decoration: none;
+  text-decoration: underline;
+}
+
 
 button {
   width: 120px;
