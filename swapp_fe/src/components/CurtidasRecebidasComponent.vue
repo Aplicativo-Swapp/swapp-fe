@@ -11,19 +11,30 @@
         :key="like[0]"
         @click="openPopup(like)"
       >
+        <!-- Exibe a imagem do usuário que curtiu (ou imagem padrão) -->
+        <img
+          :src="like[4] || defaultImage"
+          alt="Imagem do usuário"
+          class="user-photo"
+          @error="handleImageError"
+        />
         <div class="service-info">
-          <h4>
-            <strong>{{ like[1] }}</strong> curtiu seu serviço!
-          </h4>
-          <h2>{{ like[2] }}</h2>
-          <h4>Localização: {{ like[3] }}</h4>
+          <h4><strong>{{ like[1] }}</strong> curtiu sua habilidade!</h4>
+          <!-- Exibe a imagem do serviço associada ao título -->
+          <h2>Habilidade oferecida: {{ like[2] }}</h2>
+          <img
+            :src="getImage(like[2])"
+            alt="Imagem do serviço"
+            class="service-image"
+          />
+          <h4><strong>Localização:</strong> {{ like[3] }}</h4>
         </div>
       </div>
     </div>
 
-    <!-- Popup para criação do match -->
+    <!-- Renderiza o popup apenas se o objeto formatado não for nulo -->
     <CardPage
-      v-if="selectedLike"
+      v-if="formattedSelectedLike"
       :service="formattedSelectedLike"
       actionType="match"
       @close="closePopup"
@@ -36,16 +47,19 @@
 import axios from "axios";
 import { redirectToLogin } from "@/utils/auth";
 import CardPage from "@/components/Card.vue";
+import defaultImage from "@/assets/default-user.png"; // Imagem de fallback
+import fallbackImage from "@/assets/oferecer_serviço.png";
 
 export default {
   name: "LikesPage",
   components: { CardPage },
   data() {
     return {
-      likes: [], // Array com as curtidas recebidas (cada item é um array: [id, nome, título, localização, (opcional) imagem])
+      likes: [], // Formato: [id, nome, título, localização, (opcional) imagem]
       isLoading: true,
-      userId: null, // ID do usuário logado
+      userId: null,
       selectedLike: null, // Curtida selecionada para exibir no popup
+      defaultImage, // Disponível para uso no template e métodos
     };
   },
   computed: {
@@ -57,7 +71,7 @@ export default {
         full_name: this.selectedLike[1],
         title: this.selectedLike[2],
         location: this.selectedLike[3],
-        image: this.selectedLike[4] || require("@/assets/default-user.png"),
+        image: this.selectedLike[4] || defaultImage,
         description: `Serviços oferecidos: ${this.selectedLike[2]}`,
       };
     },
@@ -78,9 +92,7 @@ export default {
           return;
         }
         const response = await fetch("http://34.56.213.96:8000/api/users/detail/", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         const data = await response.json();
         this.userId = data.id;
@@ -123,13 +135,34 @@ export default {
           payload
         );
         alert("Match criado com sucesso! 🎉");
-        // Opcional: remova a curtida da lista
+        // Remove a curtida da lista após criar o match
         this.likes = this.likes.filter((like) => like[0] !== id_liked);
         this.closePopup();
       } catch (error) {
         console.error("Erro ao criar match:", error);
         alert("Erro ao criar match.");
       }
+    },
+    handleImageError(event) {
+      event.target.src = this.defaultImage;
+    },
+    getImage(nome) {
+      if (!nome) {
+        console.warn("O título do serviço está indefinido, usando imagem de fallback.");
+        return fallbackImage;
+      }
+      const formattedName = this.formatName(nome);
+      try {
+        // Tenta importar a imagem dinamicamente com o nome formatado
+        return require(`@/assets/${formattedName}.jpg`);
+      } catch (error) {
+        // Se não encontrar, retorna a imagem de fallback
+        return fallbackImage;
+      }
+    },
+    formatName(nome) {
+      // Converte para minúsculo e substitui espaços por underlines
+      return nome.toLowerCase().replace(/\s+/g, "_");
     },
   },
   mounted() {
@@ -156,11 +189,12 @@ export default {
   width: 300px;
   border: 1px solid #ccc;
   border-radius: 8px;
-  padding: 10px;
-  text-align: left;
   background-color: white;
   cursor: pointer;
+  overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .service-card:hover {
@@ -168,11 +202,23 @@ export default {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.service-info h2 {
-  margin: 10px 0;
+.user-photo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 10px;
 }
 
-.service-info h4 {
-  margin: 5px 0;
+.service-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
 }
+
+.service-info {
+  padding: 10px;
+  text-align: left;
+}
+
 </style>

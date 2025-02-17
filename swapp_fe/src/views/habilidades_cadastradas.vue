@@ -4,16 +4,9 @@
     <div class="habilidades-cadastradas">
       <h1>Suas Habilidades Cadastradas</h1>
       <div v-if="habilidades.length > 0" class="habilidades-lista">
-        <div
-          v-for="habilidade in habilidades"
-          :key="habilidade.id"
-          class="habilidade-item"
-        >
-          <img
-            :src="habilidade.foto"
-            alt="Ícone de habilidade"
-            class="habilidade-foto"
-          />
+        <div v-for="habilidade in habilidades" :key="habilidade.id" class="habilidade-item">
+          <img :src="getImage(habilidade.nome_sub_habilidade)" alt="Ícone de habilidade" class="service-image" />
+
           <div class="habilidade-info">
             <h2>{{ habilidade.descricao }}</h2>
           </div>
@@ -38,6 +31,8 @@
 import TheFooterSimp from "@/components/TheFooterSimp.vue";
 import TheHeaderMenu from "@/components/TheHeaderMenu.vue";
 import axios from "axios";
+import fallbackImage from "@/assets/oferecer_serviço.png";
+
 
 export default {
   name: "HabilidadesCadastradas",
@@ -123,6 +118,28 @@ export default {
         }
       }
     },
+    formatName(name) {
+      return name
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s/g, "")
+        .replace(/-/g, "");
+    },
+    getImage(nome) {
+      if (!nome) {
+        console.warn("O título do serviço está indefinido, usando imagem de fallback.");
+        return fallbackImage;
+      }
+      const formattedName = this.formatName(nome);
+      try {
+        // Tenta importar a imagem dinamicamente com o nome formatado
+        return require(`@/assets/${formattedName}.jpg`);
+      } catch (error) {
+        // Se não encontrar, retorna a imagem de fallback
+        return fallbackImage;
+      }
+    },
   },
   mounted() {
     this.buscarUsuarioLogado(); // Obtém o ID do usuário logado ao montar o componente
@@ -189,5 +206,11 @@ export default {
 .excluir-btn:hover {
   background-color: #14241F;
   color: #fff;
+}
+
+.service-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
 }
 </style>

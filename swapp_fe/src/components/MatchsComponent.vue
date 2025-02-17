@@ -5,34 +5,21 @@
       <p>Você ainda não possui nenhum Match.</p>
     </div>
     <div v-else class="matches-list">
-      <div
-        v-for="match in matches"
-        :key="match.id"
-        class="match-card"
-        @click="openPopup(match)"
-      >
+      <div v-for="match in matches" :key="match.id" class="match-card" @click="openPopup(match)">
         <div class="match-info">
-          <img
-            :src="match.userImage"
-            alt="Foto do usuário"
-            class="user-photo"
-          />
-          <h4>Match com {{ match.them }}</h4>
-          <p>Habilidade dele: {{ match.theirSkill }}</p>
-          <p>Sua habilidade: {{ match.yourSkill }}</p>
+          <img :src="match.userImage" alt="Foto do usuário" class="user-photo" />
+          <h2>Match com {{ match.them }}</h2>
+          <h4>Habilidade dele: {{ match.theirSkill }}</h4>
+          <img :src="getImage(match.theirSkill)" alt="Imagem do serviço" class="service-image"
+            @error="handleImageError" />
+          <h4>Sua habilidade: {{ match.yourSkill }}</h4>
         </div>
       </div>
     </div>
 
     <!-- Popup do Card para Match -->
-    <CardPage
-      v-if="selectedMatch"
-      :service="formattedSelectedMatch"
-      actionType="match"
-      @close="closePopup"
-      @remove="removeMatch"
-      @chat="openChatFromCard"
-    />
+    <CardPage v-if="selectedMatch" :service="formattedSelectedMatch" actionType="chat" @close="closePopup"
+      @remove="removeMatch" @chat="openChatFromCard" />
   </div>
 </template>
 
@@ -40,6 +27,7 @@
 import axios from "axios";
 import CardPage from "@/components/Card.vue";
 import { redirectToLogin } from "@/utils/auth";
+import fallbackImage from "@/assets/oferecer_serviço.png";
 
 export default {
   name: "MatchsComponent",
@@ -61,10 +49,9 @@ export default {
       return {
         id_liked: this.selectedMatch.id,
         full_name: this.selectedMatch.them,
-        title: "Match de Habilidade",
-        location: `Habilidade dele: ${this.selectedMatch.theirSkill}`,
+        theirSkill: this.selectedMatch.theirSkill,
         image: this.selectedMatch.userImage,
-        description: `Sua habilidade: ${this.selectedMatch.yourSkill}`,
+        yourSkill: this.selectedMatch.yourSkill,
       };
     },
   },
@@ -121,7 +108,7 @@ export default {
           );
           if (userDetails.data && userDetails.data.length > 0) {
             const loggedData = userDetails.data[0];
-            this.loggedUserSkill = loggedData.id_sub_habilidade;
+            this.loggedUserSkill = loggedData.nome_sub_habilidade;
           }
           this.fetchMatches();
         }
@@ -157,10 +144,11 @@ export default {
             const dataArray = resp.data;
             if (dataArray && dataArray.length > 0) {
               const userData = dataArray[0];
+              console.log("teste", userData);
               return {
                 id: userData.id_users,
                 them: `${userData.first_name} ${userData.last_name}`,
-                theirSkill: userData.id_sub_habilidade,
+                theirSkill: userData.nome_sub_habilidade,
                 yourSkill: this.loggedUserSkill,
                 them_id: userData.id_users,
                 userImage: userData.userImage || require("@/assets/default-user.png"),
@@ -179,6 +167,29 @@ export default {
     },
     openChatFromCard(id) {
       this.openChat(id);
+    },
+    getImage(nome) {
+      if (!nome) {
+        console.warn("nome_sub_habilidade está undefined, usando imagem de fallback.");
+        return fallbackImage;
+      }
+      const formattedName = this.formatName(nome);
+      console.log()
+      try {
+        // Tenta importar a imagem dinamicamente com o nome formatado
+        return require(`@/assets/${formattedName}.jpg`);
+      } catch (error) {
+        // Se não encontrar, retorna a imagem de fallback
+        return fallbackImage;
+      }
+    },
+
+    formatName(nome) {
+      // Exemplo de formatação: tudo minúsculo e espaços substituídos por underline
+      return nome.toLowerCase().replace(/\s+/g, "_");
+    },
+    handleImageError(event) {
+      event.target.src = fallbackImage;
     },
   },
   mounted() {
@@ -234,5 +245,15 @@ export default {
   border-radius: 50%;
   object-fit: cover;
   align-self: flex-start;
+}
+
+/* 🔹 Ajuste da imagem do serviço */
+.service-image {
+  width: 50%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 5px;
+  display: block;
+  margin: 0 auto;
 }
 </style>

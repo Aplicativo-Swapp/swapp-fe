@@ -91,6 +91,7 @@ export default {
       formData: {
         category: "",
         subcategory: "",
+        subcategory_name: "",
         localization: "",
         title: "",
         description: "",
@@ -99,7 +100,11 @@ export default {
       },
       categories: [],
       subcategories: [],
-      idUsuarioLogado: null, // Armazenará o ID do usuário logado
+      idUsuarioLogado: null,
+      userFirstName: "",
+      userLastName: "",
+      isInitialLoad: true, // Indica se estamos carregando os dados pela primeira vez
+      formattedValue: "",
     };
   },
   methods: {
@@ -167,14 +172,28 @@ export default {
         alert("Você precisa estar logado para cadastrar uma habilidade.");
         return;
       }
+      const parentResponse = await axios.get(
+        `https://rust-swapp-be-407691885788.us-central1.run.app/habilidade_sub_habilidade/${this.formData.subcategory}`
+      );
+      if (parentResponse.data && parentResponse.data.length > 0) {
+        const parent = parentResponse.data[0];
+        this.formData.subcategory_name = parent.nome;
+        } else {
+        console.error("Não foi possível obter a habilidade associada à sub-habilidade.");
+      }
 
       const postData = {
         descricao: this.formData.description,
         id_sub_habilidade: this.formData.subcategory,
         id_users: this.idUsuarioLogado,
+        // Converte o valor formatado para float
         valor: this.getFloatFromCurrency(this.formData.value) || 0,
+        first_name: this.userFirstName,
+        last_name: this.userLastName,
+        nome_sub_habilidade: this.formData.subcategory_name,
       };
-
+      console.log("teste", postData);
+      
       try {
         const response = await axios.post(
           "https://rust-swapp-be-407691885788.us-central1.run.app/inserir",
@@ -202,7 +221,9 @@ export default {
         });
 
         const data = await response.json();
-        this.idUsuarioLogado = data.id; // Obtém o ID do usuário logado
+        this.idUsuarioLogado = data.id;
+        this.userFirstName = data.first_name;
+        this.userLastName = data.last_name;
         console.log("ID do usuário logado:", this.idUsuarioLogado);
       } catch (error) {
         console.error("Erro ao buscar usuário logado:", error);
